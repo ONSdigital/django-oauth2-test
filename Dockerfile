@@ -7,4 +7,4 @@ ADD requirements.txt ./
 
 RUN pip install -r requirements.txt
 
-ENTRYPOINT python oauth2server/manage.py runserver 0.0.0.0:8000
+ENTRYPOINT python oauth2server/manage.py runserver 0.0.0.0:8040
