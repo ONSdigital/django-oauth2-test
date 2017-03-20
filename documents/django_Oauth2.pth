@@ -1,0 +1,26 @@
+# This is an alfaAesar python path file. It's used by virtualenv to add your own python path
+# to your virtual environment.
+# Why do you need this?
+# Answer: Because there are many small python programs to do things like migrate
+# tables and so on. They may need to be executed within your virtual environment when setting things up.
+
+# What do you do?
+# Answer: Just add your whole path name to the project environment below this text and remove the live
+# one which is pointing to MY personal directory structure.
+
+#/home/nherriot/workspace/alfaAesar/alfacms/trunk/alfacms/alfacms
+
+/home/nherriot/virtalenv/oauth2/django-oauth2-test/oauth2server
+/home/nherriot/virtalenv/oauth2/django-oauth2-test/oauth2server/proj
+
+# Once I've created or updated this file where do I save it?
+# Answer: If you have a home dir called /home/me and your virtual environment is setup as alfaAear you
+# should put your file in direcotry:
+# /home/me/alfaAesar/lib/python2.7/site-packages/alfaAeasar.pth
+
+# How can I check that this worked?
+# Answer: Acitvate your virtual environment and look at your path variable from the python interprator like:
+# >>> import pprint, sys
+# >>> pprint.pprint(sys.path)
+#
+# You will see a list of directories and your new one should be there too! :-)
