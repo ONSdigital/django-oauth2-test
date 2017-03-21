@@ -1,4 +1,4 @@
-appdirs==1.4.3
+appdirs==1.4.2
 asn1crypto==0.22.0
 bcrypt==2.0.0
 cffi==1.9.1
