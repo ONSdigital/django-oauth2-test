@@ -1,4 +1,6 @@
-import sysfrom proj.settings.default import *
+import sys
+
+from proj.settings.default import *
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
