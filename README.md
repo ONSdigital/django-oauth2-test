@@ -8,7 +8,8 @@ Django OAuth2 Server
 Implementation of OAuth2 Server for Django. Feel free to fork this repository and contribute.
 
 Written for Django 1.9 :)
-
+* [Changes For Ras-OAuth2-Server](#Changes For Ras-OAuth2-Server)
+    * [Admin User](#Admin User)
 * [Grant Types](#grant-types)
     * [Authorization Code](#authorization-code)
     * [Implicit](#implicit)
@@ -21,6 +22,25 @@ Written for Django 1.9 :)
     * [Installation](#installation)
     * [Configuration](#configuration)
     * [Running Tests](#running-tests)
+
+
+
+Changes For Ras-OAuth2-Server
+=============================
+
+This documents changes implemnted for the Ras-OAuth2-Server that allow this solution to be used with the microservice
+framework at ONS.
+
+Admin User
+----------
+
+The admin user has been added to the SQLite DB, which is part of the repo.
+
+Username: admin
+Email: admin@email.com
+Password: admin2017
+
+
 
 Grant Types
 ===========
