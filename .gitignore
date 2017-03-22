@@ -1,5 +1,4 @@
 .venv/
 *.pyc
 *.sqlite
-oauth2server/proj/settings/local.py
 .idea/
