@@ -2,9 +2,12 @@ __author__ = 'nherriot'
 
 import sys
 
-from proj.settings.default import *# SECURITY WARNING: keep the secret key used in production secret!
+from proj.settings.default import *
 
-SECRET_KEY = 'tbd(pv7679n_w-t++*s_*oon&#v0ubhkxhzvlq51ko2+=dt*z#'# Database
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'tbd(pv7679n_w-t++*s_*oon&#v0ubhkxhzvlq51ko2+=dt*z#'
+
+# Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 DATABASES = {
    'default': {
@@ -16,7 +19,9 @@ DATABASES = {
    },
 }
 
-DEBUG = TrueOAUTH2_SERVER = {
+DEBUG = True
+
+OAUTH2_SERVER = {
    'ACCESS_TOKEN_LIFETIME': 3600,
    'AUTH_CODE_LIFETIME': 3600,
    'REFRESH_TOKEN_LIFETIME': 3600,
