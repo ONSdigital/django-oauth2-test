@@ -28,7 +28,7 @@ Written for Django 1.9 :)
 Changes For Ras-OAuth2-Server
 =============================
 
-This documents changes implemnted for the Ras-OAuth2-Server that allow this solution to be used with the microservice
+This documents changes implemented for the Ras-OAuth2-Server that allow this solution to be used with the microservice
 framework at ONS.
 
 Admin User
@@ -39,6 +39,36 @@ The admin user has been added to the SQLite DB, which is part of the repo.
 Username: admin
 Email: admin@email.com
 Password: admin2017
+
+
+Good Version of CURL for grant_type = password
+-------------------
+
+curl -X POST  localhost:8000/api/v1/tokens/ -d 'grant_type=password&username=testuser@email.com&password=password&client_id=onc@onc.gov&client_secret=password'
+
+For this to work you need to populate tables in admin to have :
+client_id
+client_secret
+username
+userpassword
+
+
+
+Good Version of CURL for grant_type = authorization_code
+-------------------
+
+curl  localhost:8000/api/v1/tokens/ -d 'grant_type=authorization_code&client_id=onc@onc.gov&client_secret=password&code=263c9414-4709-4964-8ba1-91782cde6335'
+
+For this to work you need to populate tables in admin to have :
+client_id
+client_secret
+username
+userpassword
+
+You also need a valid access code to get your token. You could get this with:
+
+http://localhost:8000/web/authorize/?response_type=code&client_id=onc%40onc.gov&redirect_uri=https://www.example.com&state=somestate
+
 
 
 
