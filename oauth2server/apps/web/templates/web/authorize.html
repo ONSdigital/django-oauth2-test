@@ -6,7 +6,7 @@
     <form action="" method="post">
         {% csrf_token %}
 
-        <p class="lead">Client <b>{{ client.client_id }}</b> would like to perform actions on your behalf</p>
+        <p class="lead">ONS application <b>{{ client.client_id }}</b> would like to perform actions on your behalf</p>
 
         {% for chunk in scopes|chunk_evenly:3 %}
         <div class="row">

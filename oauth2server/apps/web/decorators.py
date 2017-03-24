@@ -21,13 +21,16 @@ def validate_request(view):
     def _wrapper(request, *args, **kwargs):
         # First we check client_id and make sure it's valid
         try:
+            #print "Client ID Is: ", request.GET['client_id']
             request.client = OAuthClient.objects.get(
                 client_id=request.GET['client_id'])
         except KeyError:
+            #print "client id is not correct"
             return _error_response(
                 request=request, error=u'invalid_client',
                 error_description=u'No client id supplied')
         except OAuthClient.DoesNotExist:
+            #print "client id does not exist..."
             return _error_response(
                 request=request, error=u'invalid_client',
                 error_description=u'The client id supplied is invalid')
