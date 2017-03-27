@@ -12,8 +12,16 @@ class TokensView(APIView):
 
     @method_decorator(validate_request)
     def post(self, request, *args, **kwargs):
+        print "hitting post TokensView"
         access_token = factory(request=request).grant()
         return Response(
             OAuthAccessTokenSerializer(access_token).data,
             status=status.HTTP_201_CREATED,
         )
+
+
+
+def hello_world(request):
+    print "hello world"
+
+    return("hello world")

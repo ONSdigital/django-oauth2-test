@@ -74,3 +74,10 @@ REST_FRAMEWORK = {
     ),
     'EXCEPTION_HANDLER': 'proj.exceptions.custom_exception_handler',
 }
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    )
+}
