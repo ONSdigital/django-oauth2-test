@@ -7,6 +7,10 @@ Django OAuth2 Server
 
 Implementation of OAuth2 Server for Django. Feel free to fork this repository and contribute.
 
+This code is taken from a git clone of: https://github.com/RichardKnop/django-oauth2-server/blob/master/README.md#scope
+
+
+
 Written for Django 1.9 :)
 * [Changes For Ras-OAuth2-Server](#Changes For Ras-OAuth2-Server)
     * [Admin User](#Admin User)
