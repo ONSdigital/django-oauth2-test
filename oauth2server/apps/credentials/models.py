@@ -6,7 +6,7 @@
 # See: http://pythonhosted.org/passlib/lib/passlib.hash.bcrypt.html
 
 from django.db import models
-from django.core.validators import EmailValidator, ValidationError
+from django.core.validators import EmailValidator, ValidationError, URLValidator
 
 from apps.credentials import pwd_context
 
@@ -60,11 +60,7 @@ class OAuthUser(OAuthCredentials):
         ...
     ValidationError: {'__all__': [u'Email not unique']}
     """
-    email = models.CharField(
-        max_length=254,
-        unique=True,
-        validators=[EmailValidator()],
-    )
+    email = models.CharField(max_length=254, unique=True, validators=[EmailValidator()],)
 
     def __unicode__(self):
         return self.email
@@ -73,15 +69,14 @@ class OAuthUser(OAuthCredentials):
         if self.pk is None:
             queryset = OAuthUser.objects.filter(email__iexact=self.email)
         else:
-            queryset = OAuthUser.objects.filter(email__iexact=self.email)\
-                .exclude(pk=self.pk)
+            queryset = OAuthUser.objects.filter(email__iexact=self.email).exclude(pk=self.pk)
         if len(queryset) != 0:
             raise ValidationError(u'Email not unique')
 
 
 class OAuthClient(OAuthCredentials):
     """
-    A client
+    A client see: https://tools.ietf.org/html/rfc6749#section-2.2
 
     >>> # Check that secret is converted to a hash upon saving
     >>> client = OAuthClient.objects.create(
@@ -102,12 +97,9 @@ class OAuthClient(OAuthCredentials):
     >>> client.verify_password("$this_is_my_new_password")
     True
     """
-    client_id = models.CharField(
-        max_length=254,
-        unique=True,
-        validators=[EmailValidator()],
-    )
-    redirect_uri = models.CharField(max_length=200, null=True)
+    client_id = models.CharField(max_length=254, unique=True, help_text="This is a unique string used to identify the client")
+    #redirect_uri = models.CharField(max_length=200, null=True)
+    redirect_uri = models.URLField(max_length=254, help_text="This is a unique URI to describe the callback used by the OAuth2 server", validators=[URLValidator], default="http://www.example.com")
 
     def __unicode__(self):
         return self.client_id
