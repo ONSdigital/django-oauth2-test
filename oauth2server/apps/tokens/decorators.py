@@ -186,9 +186,11 @@ def validate_request(func):
             try:
                 user = OAuthUser.objects.get(email=username)
             except OAuthUser.DoesNotExist:
+                print "I've reasied InvalidUserCredentialsException"
                 raise InvalidUserCredentialsException()
 
             if not user.verify_password(password):
+                print "I've rasied InvalidUserCredentialsException - password failed the check!"
                 raise InvalidUserCredentialsException()
 
             request.user = user
