@@ -183,6 +183,9 @@ def validate_request(func):
                 raise AuthorizationCodeNotFoundException()
 
         if grant_type == 'password':
+
+            max_failed_logins = 10
+
             print "This is grant_type password.... Second function!"
             try:
                 user = OAuthUser.objects.get(email=username)
@@ -190,16 +193,22 @@ def validate_request(func):
                 print "I've reasied InvalidUserCredentialsException"
                 raise InvalidUserCredentialsException()
 
+            if user.account_locked():
+                raise UserAccountLockedException()
+
             if not user.verify_password(password):
                 print "I've rasied InvalidUserCredentialsException - password failed the check!"
                 user.increment_failed_logins()
-                if user.get_failed_logins() >= 10:
+                user.save()
+                if user.get_failed_logins() >= max_failed_logins:
                     user.lock_account()
+                    user.save()
                     raise UserAccountLockedException()
                 raise InvalidUserCredentialsException()
 
             user.reset_failed_logins()
             user.unlock_account()
+            user.save()
             request.user = user
 
         if grant_type == 'refresh_token':
