@@ -28,7 +28,6 @@ class OAuthCredentials(models.Model):
     def verify_password(self, raw_password):
         return pwd_context.verify(secret=raw_password, hash=self.password)
 
-
 class OAuthUser(OAuthCredentials):
     """
     A user
@@ -65,6 +64,8 @@ class OAuthUser(OAuthCredentials):
         unique=True,
         validators=[EmailValidator()],
     )
+    failed_logins = models.IntegerField(default=0)
+    account_is_locked = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.email
@@ -78,6 +79,23 @@ class OAuthUser(OAuthCredentials):
         if len(queryset) != 0:
             raise ValidationError(u'Email not unique')
 
+    def increment_failed_logins(self):
+        self.failed_logins = self.failed_logins + 1
+
+    def reset_failed_logins(self):
+        self.failed_logins = 0
+
+    def get_failed_logins(self):
+        return self.failed_logins
+
+    def account_is_locked(self):
+        return self.account_is_locked
+
+    def lock_account(self):
+        self.account_is_locked = True
+
+    def unlock_account(self):
+        self.account_is_locked = False
 
 class OAuthClient(OAuthCredentials):
     """

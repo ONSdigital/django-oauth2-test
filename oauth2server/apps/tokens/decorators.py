@@ -28,6 +28,7 @@ from proj.exceptions import (
     InsufficientScopeException,
     ClientCredentialsRequiredException,
     InvalidClientCredentialsException,
+    UserAccountLockedException,
     InvalidUserCredentialsException,
     AuthorizationCodeNotFoundException,
     RefreshTokenNotFoundException,
@@ -189,8 +190,14 @@ def validate_request(func):
                 raise InvalidUserCredentialsException()
 
             if not user.verify_password(password):
+                user.increment_failed_logins()
+                if user.get_failed_logins() >= 10:
+                    user.lock_account()
+                    raise UserAccountLockedException()
                 raise InvalidUserCredentialsException()
 
+            user.reset_failed_logins()
+            user.unlock_account()
             request.user = user
 
         if grant_type == 'refresh_token':

@@ -17,6 +17,12 @@ class InvalidClientCredentialsException(APIException):
     default_detail = _(u'Invalid client credentials')
 
 
+class UserAccountLockedException(APIException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    default_error = u'account_locked'
+    default_detail = _(u'User account locked')
+
+
 class InvalidUserCredentialsException(APIException):
     status_code = status.HTTP_401_UNAUTHORIZED
     default_error = u'invalid_user'
