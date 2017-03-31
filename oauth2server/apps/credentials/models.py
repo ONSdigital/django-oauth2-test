@@ -93,6 +93,13 @@ class OAuthUser(OAuthCredentials):
     def unlock_account(self):
         self.account_is_locked = False
 
+    class Meta:
+        #db_table = 'product_item'
+        ordering = ['-email']
+        verbose_name_plural = 'Users of OAuth Server'
+
+
+
 class OAuthClient(OAuthCredentials):
     """
     A client see: https://tools.ietf.org/html/rfc6749#section-2.2
@@ -119,6 +126,11 @@ class OAuthClient(OAuthCredentials):
     client_id = models.CharField(max_length=254, unique=True, help_text="This is a unique string used to identify the client")
     #redirect_uri = models.CharField(max_length=200, null=True)
     redirect_uri = models.URLField(max_length=254, help_text="This is a unique URI to describe the callback used by the OAuth2 server", validators=[URLValidator], default="http://www.example.com")
+
+    class Meta:
+        #db_table = 'product_item'
+        ordering = ['-client_id']
+        verbose_name_plural = 'Client Identifiers for OAuth Server'
 
     def __unicode__(self):
         return self.client_id
