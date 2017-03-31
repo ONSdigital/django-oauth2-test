@@ -42,6 +42,11 @@ class OAuthScope(models.Model):
     description = models.TextField()
     is_default = models.BooleanField(default=False)
 
+    class Meta:
+        #db_table = 'product_item'
+        ordering = ['-scope']
+        verbose_name_plural = 'Scope (roles) for OAuth Server'
+
     def __unicode__(self):
         return self.scope
 
@@ -67,6 +72,11 @@ class OAuthRefreshToken(ExpiresMixin):
     def __unicode__(self):
         return self.token
 
+    class Meta:
+        #db_table = 'product_item'
+        ordering = ['-refresh_token']
+        verbose_name_plural = 'Refresh Token for OAuth Server'
+
     lifetime_setting = 'REFRESH_TOKEN_LIFETIME'
     default_lifetime = 1209600  # 14 days
 
@@ -74,8 +84,12 @@ class OAuthRefreshToken(ExpiresMixin):
 class OAuthAccessToken(TokenCodeMixin, ExpiresMixin):
 
     access_token = models.CharField(max_length=40, unique=True)
-    refresh_token = models.OneToOneField(
-        OAuthRefreshToken, null=True, related_name='access_token')
+    refresh_token = models.OneToOneField(OAuthRefreshToken, null=True, related_name='access_token')
+
+    class Meta:
+        #db_table = 'product_item'
+        ordering = ['-access_token']
+        verbose_name_plural = 'Access Tokens for OAuth Server'
 
     @property
     def token_type(self):
@@ -92,6 +106,12 @@ class OAuthAuthorizationCode(TokenCodeMixin, ExpiresMixin):
 
     code = models.CharField(max_length=40, unique=True)
     redirect_uri = models.CharField(max_length=200, null=True)
+
+    class Meta:
+        #db_table = 'product_item'
+        ordering = ['-code']
+        verbose_name_plural = 'Access Codes (used to obtain tokens)'
+
 
     def __unicode__(self):
         return self.code
