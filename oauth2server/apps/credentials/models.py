@@ -84,7 +84,7 @@ class OAuthUser(OAuthCredentials):
     def get_failed_logins(self):
         return self.failed_logins
 
-    def account_is_locked(self):
+    def account_locked(self):
         return self.account_is_locked
 
     def lock_account(self):
