@@ -25,10 +25,10 @@ class UserAccountLockedException(APIException):
 
 class InvalidUserCredentialsException(APIException):
     status_code = status.HTTP_401_UNAUTHORIZED
-    default_error = u'unauthorized_client'
-    default_code = u'unauthorized_client'
+    default_error = u'unauthorized_user'
+    default_code = u'unauthorized_user'
 
-    default_detail = _(u'Unauthorized client credentials!!!')
+    default_detail = _(u'Unauthorized user credentials!!!')
 
 
 class ExpiredAuthorizationCodeException(APIException):
