@@ -27,3 +27,7 @@ OAUTH2_SERVER = {
    'REFRESH_TOKEN_LIFETIME': 3600,
    'IGNORE_CLIENT_REQUESTED_SCOPE': False,
 }
+
+
+# This defined the max number of failed logins a user can have before the account is locked
+MAX_FAILED_LOGINS = 10

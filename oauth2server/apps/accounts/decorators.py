@@ -8,6 +8,7 @@ from django.conf import settings
 from apps.credentials.models import (
     OAuthClient,
     OAuthUser,
+    ValidationError,
 )
 from apps.tokens.models import (
     OAuthAuthorizationCode,
@@ -32,76 +33,19 @@ from proj.exceptions import (
     InvalidUserCredentialsException,
     AuthorizationCodeNotFoundException,
     RefreshTokenNotFoundException,
+    DuplicateUserException,
 )
 
 
-def authentication_required(scope):
-    """
-    Validates access token and priviliges before processing the view
-    :param func:
-    :return: decorator
-    """
-    def _check_access_token_in_header(request):
-        if not 'HTTP_AUTHORIZATION' in request.META:
-            return False
 
-        # Only Bearer tokens are supported for now
-        auth_header = request.META['HTTP_AUTHORIZATION']
-        auth_method, auth = re.split(':|;|,| ', auth_header)
-        #auth_method, auth = request.META['HTTP_AUTHORIZATION'].split(' ')
-        if auth_method.lower() != 'bearer':
-            return False
-
-        return auth
-
-    def _check_access_token_in_post(request):
-        if 'access_token' not in request.POST:
-            return False
-
-        return request.POST['access_token']
-
-    def _check_access_token_in_get(request):
-        if 'access_token' not in request.GET:
-            return False
-
-        return request.GET['access_token']
-
-    def decorator(func):
-        @wraps(func, assigned=available_attrs(func))
-        def inner(request, *args, **kwargs):
-
-            access_token = _check_access_token_in_header(request=request)
-            if not access_token:
-                access_token = _check_access_token_in_post(request=request)
-            if not access_token:
-                access_token = _check_access_token_in_get(request=request)
-
-            if not access_token:
-                raise AccessTokenRequiredException()
-
-            try:
-                access_token = OAuthAccessToken.objects.get(
-                    access_token=access_token)
-            except OAuthAccessToken.DoesNotExist:
-                raise InvalidAccessTokenException()
-
-            if access_token.is_expired():
-                raise ExpiredAccessTokenException()
-
-            if scope not in access_token.scope:
-                raise InsufficientScopeException()
-
-            request.access_token = access_token
-            return func(request, *args, **kwargs)
-
-        return inner
-
-    return decorator
 
 
 def validate_request(func):
     """
-    Validates that request contains all required data
+    Validates that request contains all required data for creating, updating and deleting an OAuth User account. It
+    looks for a valid client and client_id. It then validates the username and password for size and duplicate accounts.
+    If scope parameters are given they will be set if part of the system.
+    If account active is set, the account will be set as active, otherwise it will be set as deactivated.
     :param func:
     :return: decorator
     """
@@ -184,6 +128,8 @@ def validate_request(func):
 
         if grant_type == 'password':
 
+            max_failed_logins = 10
+
             print "This is grant_type password.... Second function!"
             try:
                 user = OAuthUser.objects.get(email=username)
@@ -198,7 +144,7 @@ def validate_request(func):
                 print "I've rasied InvalidUserCredentialsException - password failed the check!"
                 user.increment_failed_logins()
                 user.save()
-                if user.get_failed_logins() >= settings.MAX_FAILED_LOGINS:
+                if user.get_failed_logins() >= max_failed_logins:
                     user.lock_account()
                     user.save()
                     raise UserAccountLockedException()
@@ -264,6 +210,46 @@ def validate_request(func):
 
         request.client = client
 
+    def _extract_username(request):
+        """
+        Tries to extract username and password from the request.
+        It first looks for Authorization header, then tries POST data.
+        Assigns client object to the request for later use.
+        :param request:
+        :return:
+        """
+        username, password = None, None
+
+        try:
+            username = request.POST['username']
+        except KeyError:
+            try:
+                username = request.GET['username']
+            except KeyError:
+                raise UsernameRequiredException()
+        try:
+            password = request.POST['password']
+        except KeyError:
+            try:
+                password = request.GET['password']
+            except KeyError:
+                raise PasswordRequiredException()
+
+        # Check username does not exist in the DB
+        try:
+            OAuthUser(email=username).validate_unique()
+            OAuthUser(email=username, password=password).clean()
+            user = OAuthUser.objects.create(email=username, password=password)
+            user.save()
+        except ValidationError:
+            print "we failed username check for creating a user"
+            raise DuplicateUserException
+
+
+    def _extract_active(request):
+        print "Running extracting active"
+
+
     def _extract_scope(request):
         """
         Tries to extract authorization scope from the request.
@@ -295,10 +281,13 @@ def validate_request(func):
 
     def decorator(request, *args, **kwargs):
         print "decorator hit..."
-        _validate_grant_type(request=request)
+        #_validate_grant_type(request=request)
         _extract_client(request=request)
-        _extract_scope(request=request)
+        _extract_username(request=request)
+        _extract_active(request=request)
+        #_extract_scope(request=request)
 
         return func(request, *args, **kwargs)
 
     return decorator
+

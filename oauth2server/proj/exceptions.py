@@ -115,6 +115,13 @@ class RefreshTokenNotFoundException(APIException):
     default_detail = _(u'Refresh token not found')
 
 
+class DuplicateUserException(APIException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    default_error = u'duplicate_user'
+    default_code = u'duplicate_user'
+    default_detail = _(u'Duplicate user credentials')
+
+
 def custom_exception_handler(exc, context):
     """
     Formats REST exceptions like:
