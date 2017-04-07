@@ -3,6 +3,7 @@ import re
 from functools import wraps
 
 from django.utils.decorators import available_attrs
+from django.core.validators import validate_email
 from django.conf import settings
 
 from apps.credentials.models import (
@@ -49,121 +50,7 @@ def validate_request(func):
     :param func:
     :return: decorator
     """
-    print("in the decorator")
-
-    def _validate_grant_type(request):
-        """
-        Checks grant_type parameter and also performs checks on additional
-        parameters required by specific grant types.
-        Assigns grant_type to the request so we can use it later.
-
-        Also optionally assigns other objects based on specific grant such
-        as user, auth_code and refresh_token
-        :param request:
-        :return:
-        """
-
-        grant_type = request.POST.get('grant_type', None)
-
-        if not grant_type:
-            raise GrantTypeRequiredException()
-
-        valid_grant_types = (
-            'client_credentials',
-            'authorization_code',
-            'password',
-            'refresh_token',
-        )
-        if grant_type not in valid_grant_types:
-            print "Invalid grant type exception..."
-            raise InvalidGrantTypeException()
-
-        # authorization_code grant requires code parameter
-        if grant_type == 'authorization_code':
-            print "This is grant_type auth_code"
-            try:
-                auth_code = request.POST['code']
-            except KeyError:
-                try:
-                    auth_code = request.GET['code']
-                except KeyError:
-                    raise CodeRequiredException()
-
-        # password grant requires username and password parameters
-        if grant_type == 'password':
-            print "This is grant_type password..."
-            try:
-                username = request.POST['username']
-            except KeyError:
-                try:
-                    username = request.GET['username']
-                except KeyError:
-                    raise UsernameRequiredException()
-            try:
-                password = request.POST['password']
-            except KeyError:
-                try:
-                    password = request.GET['password']
-                except KeyError:
-                    raise PasswordRequiredException()
-
-        # refresh_token grant requires refresh_token parameter
-        if grant_type == 'refresh_token':
-            print "This is grant_type refresh_code"
-            try:
-                refresh_token = request.POST['refresh_token']
-            except KeyError:
-                try:
-                    refresh_token = request.GET['refresh_token']
-                except KeyError:
-                    raise RefreshTokenRequiredException()
-
-        if grant_type == 'authorization_code':
-            print "This is grant_type auth_code"
-            try:
-                request.auth_code = OAuthAuthorizationCode.objects.get(
-                    code=auth_code)
-            except OAuthAuthorizationCode.DoesNotExist:
-                raise AuthorizationCodeNotFoundException()
-
-        if grant_type == 'password':
-
-            max_failed_logins = 10
-
-            print "This is grant_type password.... Second function!"
-            try:
-                user = OAuthUser.objects.get(email=username)
-            except OAuthUser.DoesNotExist:
-                print "I've reasied InvalidUserCredentialsException"
-                raise InvalidUserCredentialsException()
-
-            if user.account_locked():
-                raise UserAccountLockedException()
-
-            if not user.verify_password(password):
-                print "I've rasied InvalidUserCredentialsException - password failed the check!"
-                user.increment_failed_logins()
-                user.save()
-                if user.get_failed_logins() >= max_failed_logins:
-                    user.lock_account()
-                    user.save()
-                    raise UserAccountLockedException()
-                raise InvalidUserCredentialsException()
-
-            user.reset_failed_logins()
-            user.unlock_account()
-            user.save()
-            request.user = user
-
-        if grant_type == 'refresh_token':
-            print "This is grant_type refresh_code..... Second function"
-            try:
-                request.refresh_token = OAuthRefreshToken.objects.get(
-                    refresh_token=refresh_token)
-            except OAuthRefreshToken.DoesNotExist:
-                raise RefreshTokenNotFoundException()
-
-        request.grant_type = grant_type
+    print("in the account validate request decorator")
 
     def _extract_client(request):
         """
@@ -227,6 +114,14 @@ def validate_request(func):
                 username = request.GET['username']
             except KeyError:
                 raise UsernameRequiredException()
+
+        try:
+            validate_email(username)
+
+        except ValidationError:
+            print "email failed validation check"
+            raise InvalidUserCredentialsException
+
         try:
             password = request.POST['password']
         except KeyError:
@@ -237,17 +132,42 @@ def validate_request(func):
 
         # Check username does not exist in the DB
         try:
-            OAuthUser(email=username).validate_unique()
-            OAuthUser(email=username, password=password).clean()
-            user = OAuthUser.objects.create(email=username, password=password)
-            user.save()
+            # Try create an OAuthUser object and validate that it's unique. Hence we just instantiate the object.
+            user = OAuthUser(email=username, password=password)
+            user.validate_unique()
+
         except ValidationError:
             print "we failed username check for creating a user"
             raise DuplicateUserException
 
+        # OK we pass all validation checks pass the user object back in the request
+        request.user = user
+
+
 
     def _extract_active(request):
         print "Running extracting active"
+
+        """
+        Tries to extract username and password from the request.
+        It first looks for Authorization header, then tries POST data.
+        Assigns client object to the request for later use.
+        :param request:
+        :return:
+        """
+
+        try:
+            accountVerified = request.POST['account_verified']
+            request.user.account_is_verified = accountVerified
+        except KeyError:
+            try:
+                accountVerified = request.GET['account_verified']
+                request.user.account_is_verified = accountVerified
+            except KeyError:
+                #raise UsernameRequiredException()
+                # This is an optional parameter so set it as false if it is not present
+                request.user.account_is_verified = False
+                request.account_verified = False
 
 
     def _extract_scope(request):
@@ -258,6 +178,9 @@ def validate_request(func):
         :param request:
         :return:
         """
+
+        print "Extracting scope"
+
         if request.grant_type not in ('client_credentials', 'password'):
             return
 
@@ -280,7 +203,7 @@ def validate_request(func):
             request.scopes = OAuthScope.objects.filter(is_default=True)
 
     def decorator(request, *args, **kwargs):
-        print "decorator hit..."
+        print "decorator hit for admin REST interface..."
         #_validate_grant_type(request=request)
         _extract_client(request=request)
         _extract_username(request=request)

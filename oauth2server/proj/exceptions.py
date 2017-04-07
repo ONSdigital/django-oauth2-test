@@ -122,6 +122,14 @@ class DuplicateUserException(APIException):
     default_detail = _(u'Duplicate user credentials')
 
 
+class DatabaseFailureException(APIException):
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    default_error = u'database_failure'
+    default_code = u'database_failure'
+    default_detail = _(u'There was a system failure creating this resource on the server')
+
+
+
 def custom_exception_handler(exc, context):
     """
     Formats REST exceptions like:

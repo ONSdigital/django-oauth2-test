@@ -14,10 +14,7 @@ class TokensView(APIView):
     def post(self, request, *args, **kwargs):
         print "hitting post TokensView"
         access_token = factory(request=request).grant()
-        return Response(
-            OAuthAccessTokenSerializer(access_token).data,
-            status=status.HTTP_201_CREATED,
-        )
+        return Response(OAuthAccessTokenSerializer(access_token).data, status=status.HTTP_201_CREATED,)
 
 
 
