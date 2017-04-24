@@ -7,7 +7,7 @@ ADD requirements.txt ./
 
 RUN pip install -r requirements.txt
 RUN cd oauth2server
-RUN python manage.py migrate
-RUN cp -f django_oauth2_server ../
+RUN python oauth2server/manage.py migrate
+RUN cp -f oauth2server/django_oauth2_server .
 
 ENTRYPOINT python oauth2server/manage.py runserver 0.0.0.0:8040
