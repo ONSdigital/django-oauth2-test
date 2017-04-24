@@ -6,6 +6,7 @@ ADD oauth2server ./oauth2server
 ADD requirements.txt ./
 
 RUN pip install -r requirements.txt
-RUN python oauth2server/manage.py migrate
+RUN cd oauth2server
+RUN python manage.py migrate
 
 ENTRYPOINT python oauth2server/manage.py runserver 0.0.0.0:8040
