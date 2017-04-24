@@ -16,9 +16,3 @@ class TokensView(APIView):
         access_token = factory(request=request).grant()
         return Response(OAuthAccessTokenSerializer(access_token).data, status=status.HTTP_201_CREATED,)
 
-
-
-def hello_world(request):
-    print "hello world"
-
-    return("hello world")

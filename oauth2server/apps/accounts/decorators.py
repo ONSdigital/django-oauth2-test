@@ -70,6 +70,7 @@ def validate_request(func):
             #auth_method, auth = request.META['HTTP_AUTHORIZATION'].split(':')
             if auth_method.lower() == 'basic':
                 client_id, client_secret = base64.b64decode(auth).split(':')
+                print "client id is: {} , and client secret is: {}".format(client_id, client_secret)
 
         # Fallback to POST and then to GET
         if not client_id or not client_secret:
@@ -96,6 +97,8 @@ def validate_request(func):
             raise InvalidClientCredentialsException()
 
         request.client = client
+        #for key in request:
+        #    print "key is: {} and value is: {}".format(key, request[key])
 
     def _extract_username(request):
         """
@@ -105,10 +108,14 @@ def validate_request(func):
         :param request:
         :return:
         """
+
+        print "In _extract_username"
+
         username, password = None, None
 
         try:
             username = request.POST['username']
+            print "username from POST is: {}".format(password)
         except KeyError:
             try:
                 username = request.GET['username']
@@ -124,15 +131,18 @@ def validate_request(func):
 
         try:
             password = request.POST['password']
+            print "password from POST is: {}".format(password)
         except KeyError:
             try:
                 password = request.GET['password']
+                print "password from GET is: {}".format(password)
             except KeyError:
                 raise PasswordRequiredException()
 
         # Check username does not exist in the DB
         try:
             # Try create an OAuthUser object and validate that it's unique. Hence we just instantiate the object.
+            print "Trying to create user: {} with password: {}".format(username, password)
             user = OAuthUser(email=username, password=password)
             user.validate_unique()
 
