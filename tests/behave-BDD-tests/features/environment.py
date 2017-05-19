@@ -15,3 +15,8 @@ def before_feature(context, feature):
 
     context.token_url = context.oauth_domain + context.oauth_port + oauth_token_endpoint
     context.authorization_url = context.oauth_domain + context.oauth_port + oauth_authorization_endpoint
+
+    context.client_id = 'onc@onc.gov'
+    context.client_secret = 'password'
+    context.username = 'testuser@email.com'
+    context.password = 'password'

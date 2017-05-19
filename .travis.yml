@@ -12,6 +12,7 @@ cache:
     - ~/virtualenv/python2.7/
 install:
   - pip install -r requirements.txt
+  - pip install -r requirements-for-tests.txt
 before_script:
   - createuser --createdb django_oauth2_server
   - createdb -U django_oauth2_server django_oauth2_server

@@ -69,6 +69,7 @@ def step_impl(context, attempt_count):
         context.execute_steps(u'''
             when a POST request is made to \'/api/v1/tokens/\'
         ''')
+        assert context.response
 
 
 # ----------------------------------------------------------------------------------------------------------------------

@@ -36,7 +36,6 @@ Feature: RAS OAuth2 using 'Resource Owner Password Protection Grant' flow
     | client_secret   | invalid_password_for_bdd_test   | Invalid client credentials        |
     | client_secret   | ''                              | Invalid client credentials        |
 
-
   # TODO: Currently, the only way to reset/unlock a user's account is via the Django OAuth2 admin UI. Could Selenium be used here?
   Scenario: Get access token after a number of unsuccessful attempts
     Given an existing user with an invalid password
