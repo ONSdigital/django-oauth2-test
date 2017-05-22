@@ -20,28 +20,26 @@ SECRET_KEY = 'tbd(pv7679n_w-t++*s_*oon&#v0ubhkxhzvlq51ko2+=dt*z#'           #TOD
 # }
 
 
-### Extract the database URI value from VCAP_SERVICES
-def getDatabaseUri():
+# Extract the database URI value from VCAP_SERVICES
 
-    global uri
 
-    if uri is not None:
-        return uri
-
-    if 'VCAP_SERVICES' in os.environ:
-        print('VCAP_SERVICES found in os.environ')
-        decoded_config = json.loads(os.environ['VCAP_SERVICES'])
-    else:
-        print('VCAP_SERVICES NOT found in os.environ')
-        return os.environ.get('SQLALCHEMY_DATABASE_URI', 'postgresql://ras_frontstage_backup:password@localhost:5431/postgres')
-
+if 'VCAP_SERVICES' in os.environ:
+    print('VCAP_SERVICES found in os.environ')
+    decoded_config = json.loads(os.environ['VCAP_SERVICES'])
     for key, value in decoded_config.items():
         print('Inspecting key: "' + str(key) + '" with value: ' + str(value))
         if decoded_config[key][0]['name'] == 'postgresql':
             creds = decoded_config[key][0]['credentials']
             uri = creds['uri']
+            print ('Found postgres uri string in vcap settings')
             print('Postgres DATABASE uri: ' + uri)
-            return uri
+
+
+
+else:
+    print('VCAP_SERVICES NOT found in os.environ using default SQL database')
+    #return os.environ.get('SQLALCHEMY_DATABASE_URI', 'postgresql://ras_frontstage_backup:password@localhost:5431/postgres')
+
 
 
 DATABASES = {
