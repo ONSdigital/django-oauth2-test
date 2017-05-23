@@ -21,4 +21,6 @@ env:
     DB_USERNAME: cgklfudq
     DB_PASSWORD: SUEHnEG5I42gCGKXzpgGQ2XT_cZ-PEzi
     DB_NAME: cgklfudq
+    DJANGO_SETTINGS_MODULE: proj.settings.docker_settings
+
 

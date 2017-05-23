@@ -45,11 +45,15 @@ else:
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'postgres',                                 #TODO inject this in production.
-        'USER': 'postgres',                                 #TODO inject this in production.
+#        'NAME': 'postgres',                                 #TODO inject this in production.
+        'NAME': 'cgklfudq',
+#        'USER': 'postgres',                                 #TODO inject this in production.
+        'USER': 'cgklfudq',
         #'PASSWORD': 'postgres',                             #TODO inject this in production.
-        'HOST': 'postgres',                                 # Set to using the postgres SQL DB within our docker container. See docker-compose.yml
+        'PASSWORD':'SUEHnEG5I42gCGKXzpgGQ2XT_cZ-PEzi',
+        #'HOST': 'postgres',                                 # Set to using the postgres SQL DB within our docker container. See docker-compose.yml
                                                             # for information on this within the ras-compose project on Github for ONSDigital
+        'HOST':'stampy.db.elephantsql.com',
         'PORT': '5432',                                     # While running inside our docker container we use the normal port to access postgres
     }
 }
