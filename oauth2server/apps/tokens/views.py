@@ -6,13 +6,16 @@ from django.utils.decorators import method_decorator
 from apps.tokens.serializers import OAuthAccessTokenSerializer
 from apps.tokens.decorators import validate_request
 from apps.tokens.granttypes import factory
+import logging
 
+stdlogger = logging.getLogger(__name__)
 
 class TokensView(APIView):
 
     @method_decorator(validate_request)
     def post(self, request, *args, **kwargs):
-        print "hitting post TokensView"
+        stdlogger.debug("Hitting post TokensView")
+
         access_token = factory(request=request).grant()
         return Response(OAuthAccessTokenSerializer(access_token).data, status=status.HTTP_201_CREATED,)
 

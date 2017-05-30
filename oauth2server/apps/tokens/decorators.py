@@ -1,5 +1,7 @@
 import base64
 import re
+import logging
+
 from functools import wraps
 
 from django.utils.decorators import available_attrs
@@ -33,6 +35,8 @@ from proj.exceptions import (
     AuthorizationCodeNotFoundException,
     RefreshTokenNotFoundException,
 )
+
+stdlogger = logging.getLogger(__name__)
 
 
 def authentication_required(scope):
@@ -105,7 +109,7 @@ def validate_request(func):
     :param func:
     :return: decorator
     """
-    print("in the decorator")
+    stdlogger.debug("Token validate request decorator being called")
 
     def _validate_grant_type(request):
         """
@@ -131,12 +135,12 @@ def validate_request(func):
             'refresh_token',
         )
         if grant_type not in valid_grant_types:
-            print "Invalid grant type exception..."
+            stdlogger.warning( "Invalid grant type exception..." )
             raise InvalidGrantTypeException()
 
         # authorization_code grant requires code parameter
         if grant_type == 'authorization_code':
-            print "This is grant_type auth_code"
+            stdlogger.debug("Grant_type auth_code")
             try:
                 auth_code = request.POST['code']
             except KeyError:
@@ -147,7 +151,8 @@ def validate_request(func):
 
         # password grant requires username and password parameters
         if grant_type == 'password':
-            print "This is grant_type password..."
+
+            stdlogger.debug("Grant_type password")
             try:
                 username = request.POST['username']
             except KeyError:
@@ -165,7 +170,7 @@ def validate_request(func):
 
         # refresh_token grant requires refresh_token parameter
         if grant_type == 'refresh_token':
-            print "This is grant_type refresh_code"
+            stdlogger.debug("Grant_type refresh_code")
             try:
                 refresh_token = request.POST['refresh_token']
             except KeyError:
@@ -175,7 +180,7 @@ def validate_request(func):
                     raise RefreshTokenRequiredException()
 
         if grant_type == 'authorization_code':
-            print "This is grant_type auth_code"
+            stdlogger.debug("Grant_type auth_code")
             try:
                 request.auth_code = OAuthAuthorizationCode.objects.get(
                     code=auth_code)
@@ -184,18 +189,19 @@ def validate_request(func):
 
         if grant_type == 'password':
 
-            print "This is grant_type password.... Second function!"
+            stdlogger.debug("Grant_type password. Second function")
             try:
                 user = OAuthUser.objects.get(email=username)
             except OAuthUser.DoesNotExist:
-                print "I've reasied InvalidUserCredentialsException"
+                stdlogger.warning( "Raised InvalidUserCredentialsException")
                 raise InvalidUserCredentialsException()
 
             if user.account_locked():
+                stdlogger.warning( "Raised UserAccountLockedException")
                 raise UserAccountLockedException()
 
             if not user.verify_password(password):
-                print "I've rasied InvalidUserCredentialsException - password failed the check!"
+                stdlogger.debug("I've raised InvalidUserCredentialsException - password failed the check!")
                 user.increment_failed_logins()
                 user.save()
                 if user.get_failed_logins() >= settings.MAX_FAILED_LOGINS:
@@ -210,7 +216,7 @@ def validate_request(func):
             request.user = user
 
         if grant_type == 'refresh_token':
-            print "This is grant_type refresh_code..... Second function"
+            stdlogger.debug( "This is grant_type refresh_code..... Second function")
             try:
                 request.refresh_token = OAuthRefreshToken.objects.get(
                     refresh_token=refresh_token)
@@ -231,7 +237,7 @@ def validate_request(func):
 
         # First, let's check Authorization header if present
         if 'HTTP_AUTHORIZATION' in request.META:
-            print "*** We have a HTTP_AUTHORIZATION request ***. Which is: {}".format(request.META['HTTP_AUTHORIZATION'])
+            stdlogger.debug("*** We have a HTTP_AUTHORIZATION request ***. Which is: {}".format(request.META['HTTP_AUTHORIZATION']))
             auth_header = request.META['HTTP_AUTHORIZATION']
             auth_method, auth = re.split(':|;|,| ', auth_header)
             #auth_method, auth = request.META['HTTP_AUTHORIZATION'].split(':')
@@ -240,7 +246,7 @@ def validate_request(func):
 
         # Fallback to POST and then to GET
         if not client_id or not client_secret:
-            print "hit client id"
+            stdlogger.info("Client id is missing from GET, trying POST")
             try:
                 client_id = request.POST['client_id']
                 client_secret = request.POST['client_secret']
@@ -249,7 +255,7 @@ def validate_request(func):
                     client_id = request.GET['client_id']
                     client_secret = request.GET['client_secret']
                 except KeyError:
-                    print "Those muppets forgot the client_id and client_secret in a POST and GET method!!"
+                    stdlogger.warning("The client_id and client_secret in a POST and GET method is missing")
                     raise ClientCredentialsRequiredException()
 
         # Check client exists
@@ -294,7 +300,7 @@ def validate_request(func):
             request.scopes = OAuthScope.objects.filter(is_default=True)
 
     def decorator(request, *args, **kwargs):
-        print "decorator hit..."
+        stdlogger.debug("Decorator called for Validating requests")
         _validate_grant_type(request=request)
         _extract_client(request=request)
         _extract_scope(request=request)

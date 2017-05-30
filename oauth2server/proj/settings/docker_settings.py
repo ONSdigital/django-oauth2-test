@@ -5,6 +5,9 @@ import json
 
 from proj.settings.default import *
 
+remoteLogger = logging.getLogger('remote')
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'tbd(pv7679n_w-t++*s_*oon&#v0ubhkxhzvlq51ko2+=dt*z#'           #TODO inject this variable on production
 
@@ -25,20 +28,20 @@ SECRET_KEY = 'tbd(pv7679n_w-t++*s_*oon&#v0ubhkxhzvlq51ko2+=dt*z#'           #TOD
 
 
 if 'VCAP_SERVICES' in os.environ:
-    print('VCAP_SERVICES found in os.environ')
+    remoteLogger.info('VCAP_SERVICES found in os.environ')
     decoded_config = json.loads(os.environ['VCAP_SERVICES'])
     for key, value in decoded_config.items():
-        print('Inspecting key: "' + str(key) + '" with value: ' + str(value))
+        remoteLogger.debug("Inspecting key: {} with value: {}".format(str(key), str(value)))
         if decoded_config[key][0]['name'] == 'postgresql':
             creds = decoded_config[key][0]['credentials']
             uri = creds['uri']
-            print ('Found postgres uri string in vcap settings')
-            print('Postgres DATABASE uri: ' + uri)
+            remoteLogger.info("Found postgres uri string in vcap settings")
+            remoteLogger.info("Postgres DATABASE uri: {}".format(uri))
 
 
 
 else:
-    print('VCAP_SERVICES NOT found in os.environ using default SQL database')
+    remoteLogger('VCAP_SERVICES NOT found in os.environ using default SQL database')
     #return os.environ.get('SQLALCHEMY_DATABASE_URI', 'postgresql://ras_frontstage_backup:password@localhost:5431/postgres')
 
 
