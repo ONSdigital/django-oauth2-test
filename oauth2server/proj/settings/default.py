@@ -151,21 +151,21 @@ LOGGING = {
             'level': 'DEBUG',
             'filters': ['require_debug_true'],
             'class': 'logging.FileHandler',
-            'filename': 'logs/oauth2_development.log',
+            'filename': 'oauth2_development.log',
             'formatter': 'verbose'
         },
         'production_logfile': {
             'level': 'WARNING',
             'filters': ['require_debug_false'],
             'class': 'logging.FileHandler',
-            'filename': 'logs/oauth2_production.log',
+            'filename': 'oauth2_production.log',
             'formatter': 'simple'
         },
         'remote_logfile': {
             'level': 'DEBUG',
             'filters': ['require_debug_false', 'require_debug_true'],
             'class': 'logging.FileHandler',
-            'filename': 'logs/oauth2_remote.log',
+            'filename': 'oauth2_remote.log',
             'formatter': 'simple'
         },
         'proj_logfile': {
@@ -173,7 +173,7 @@ LOGGING = {
             #'filters': ['require_debug_false','require_debug_true'],
             'filters':[],                           # Allow all 'proj' related logs to be sent to this project folder
             'class': 'logging.FileHandler',
-            'filename': 'logs/oauth2_proj.log',
+            'filename': 'oauth2_proj.log',
             'formatter': 'simple'
         },
     },

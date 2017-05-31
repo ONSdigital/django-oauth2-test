@@ -41,7 +41,7 @@ if 'VCAP_SERVICES' in os.environ:
 
 
 else:
-    remoteLogger('VCAP_SERVICES NOT found in os.environ using default SQL database')
+    remoteLogger.info('VCAP_SERVICES NOT found in os.environ using default SQL database')
     #return os.environ.get('SQLALCHEMY_DATABASE_URI', 'postgresql://ras_frontstage_backup:password@localhost:5431/postgres')
 
 
