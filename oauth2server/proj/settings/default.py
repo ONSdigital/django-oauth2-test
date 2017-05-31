@@ -86,39 +86,12 @@ REST_FRAMEWORK = {
 
 # Custom logging to give us unique logging to work on remote containers and normal logging
 # Requirements for our custom loggers are:
-# 1)    Modify the console handler to output logging message from the DEBUG level, instead of the default INFO level.
+# 1)    A console logger that logs debug to console for DEBUG=TRUE and WARNINGS and higher when DEBUG=FALSE.
 # 2)    Disable all email sent to ADMINS via the mail_admins handler for the django.request and django.security loggers.
 # 3)    Add two custom logging formatters to enhance the logging output.
-# 4)    Add a new handler as a file for logging messages from all loggers, for the DEBUG level and that only functions
-#       when DEBUG=True.
-# 5)    Add a new handler as a file for logging messages from all loggers except py.warnings, for the ERROR level and
-#       that only functions when DEBUG=False.
-# 6)    Add a new handler as a file for logging messages from the remote logger, for the DEBUG level and that functions
-#       when either DEBUG=False or DEBUG=True.
-
-
-
-
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'file': {
-#             'level': 'DEBUG',
-#             'class': 'logging.FileHandler',
-#             'filename': 'logs/debug.log',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#     },
-# }
-
-
+# 4)    Add handlers to write files for 'proj' and 'app' name space. For production (DEBUG=FALSE) and dev (DEBUG=TRUE).
+# 5)    Add LOGGERS for 'apps' and 'proj' name space. Add LOGGERS for python and django default. Add a logger for remote
+#       files.
 
 LOGGING = {
     'version': 1,
@@ -142,11 +115,18 @@ LOGGING = {
     'handlers': {
         'console': {
             'level': 'DEBUG',
-            #'filters': ['require_debug_true', 'require_debug_true'],
-            'filters': [],                      # Allow all logs to pass to console
+            'filters': ['require_debug_true'],
+            #'filters': [],                      # Allow all logs to pass to console
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
+        'console_cloud_foundry': {
+            'level': 'WARNING',
+            'filters': ['require_debug_false'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+
         'development_logfile': {
             'level': 'DEBUG',
             'filters': ['require_debug_true'],
@@ -180,7 +160,7 @@ LOGGING = {
     'loggers': {
         # This is our main log handler. It catches all logs within apps.*.*
         'apps': {
-            'handlers': ['console', 'production_logfile', 'development_logfile'],
+            'handlers': ['console', 'console_cloud_foundry', 'production_logfile', 'development_logfile'],
             'level': 'DEBUG',
         },
         # This defines a handler for the namespace proj.*.*
