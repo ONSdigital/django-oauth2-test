@@ -1,6 +1,6 @@
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-
+import logging                                                      # Python logging package
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
@@ -82,3 +82,107 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     )
 }
+
+
+# Custom logging to give us unique logging to work on remote containers and normal logging
+# Requirements for our custom loggers are:
+# 1)    A console logger that logs debug to console for DEBUG=TRUE and WARNINGS and higher when DEBUG=FALSE.
+# 2)    Disable all email sent to ADMINS via the mail_admins handler for the django.request and django.security loggers.
+# 3)    Add two custom logging formatters to enhance the logging output.
+# 4)    Add handlers to write files for 'proj' and 'app' name space. For production (DEBUG=FALSE) and dev (DEBUG=TRUE).
+# 5)    Add LOGGERS for 'apps' and 'proj' name space. Add LOGGERS for python and django default. Add a logger for remote
+#       files.
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,                                       # This disables existing django loggers
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'formatters': {
+        'simple': {
+            'format': '[%(asctime)s] %(levelname)s %(message)s','datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'verbose': {
+            'format': '[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s','datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            #'filters': [],                      # Allow all logs to pass to console
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'console_cloud_foundry': {
+            'level': 'WARNING',
+            'filters': ['require_debug_false'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+
+        'development_logfile': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.FileHandler',
+            'filename': 'oauth2_development.log',
+            'formatter': 'verbose'
+        },
+        'production_logfile': {
+            'level': 'WARNING',
+            'filters': ['require_debug_false'],
+            'class': 'logging.FileHandler',
+            'filename': 'oauth2_production.log',
+            'formatter': 'simple'
+        },
+        'remote_logfile': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_false', 'require_debug_true'],
+            'class': 'logging.FileHandler',
+            'filename': 'oauth2_remote.log',
+            'formatter': 'simple'
+        },
+        'proj_logfile': {
+            'level': 'DEBUG',
+            #'filters': ['require_debug_false','require_debug_true'],
+            'filters':[],                           # Allow all 'proj' related logs to be sent to this project folder
+            'class': 'logging.FileHandler',
+            'filename': 'oauth2_proj.log',
+            'formatter': 'simple'
+        },
+    },
+    'loggers': {
+        # This is our main log handler. It catches all logs within apps.*.*
+        'apps': {
+            'handlers': ['console', 'console_cloud_foundry', 'production_logfile', 'development_logfile'],
+            'level': 'DEBUG',
+        },
+        # This defines a handler for the namespace proj.*.*
+        'proj': {
+            'handlers': ['console', 'development_logfile', 'proj_logfile'],
+        },
+        # Our remote handler is used for logging anything we want to be logged while the app is running remotely
+        'remote': {
+            'handlers': ['console', 'remote_logfile'],
+        },
+        # This is our default django handler loggs
+        'django': {
+            'handlers': ['console', 'development_logfile', 'production_logfile'],
+        },
+        # This is our default warnings log
+        'py.warnings': {
+            'handlers': ['console', 'development_logfile'],
+        },
+    }
+}
+
+
+
+
+
