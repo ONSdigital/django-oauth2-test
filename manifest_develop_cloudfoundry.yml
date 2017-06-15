@@ -13,9 +13,6 @@ env:
     CSRF_ENABLED: "True"
     SECRET_KEY: this-really-needs-to-be-changed
     dbname: ras_frontstage_backup
-    PARTYSERVICE_PROTOCOL: http://
-    PARTYSERVICE_SERVER: ras-party.local.pcfdev.io
-    PARTYSERVICE_REGISTER_ENDPOINT: /respondents/
     DB_HOST: stampy.db.elephantsql.com
     DB_PORT: "5432"
     DB_USERNAME: cgklfudq
