@@ -1,6 +1,6 @@
 ---
 applications:
-- name: ras-OAuth2-2706
+- name: ras-OAuth2
   buildpack: https://github.com/cloudfoundry/python-buildpack.git
   memory: 256M
   routes:
