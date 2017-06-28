@@ -6,8 +6,6 @@ applications:
   routes:
       - route: ras-OAuth2
   env:
-    OAUTHLIB_INSECURE_TRANSPORT: "1"                         # Used for development. Allows OAuth2 protocol to work over non TLS protocol
-    APP_SETTINGS: config.Config                              # Allows Flask to load config files
     DEBUG: "False"
     TESTING: "False"
     CSRF_ENABLED: "True"
@@ -18,6 +16,6 @@ applications:
     DB_USERNAME: cgklfudq
     DB_PASSWORD: SUEHnEG5I42gCGKXzpgGQ2XT_cZ-PEzi
     DB_NAME: cgklfudq
-    DJANGO_SETTINGS_MODULE: proj.settings.docker_settings
+    DJANGO_SETTINGS_MODULE: proj.settings.cloud_foundry_settings
 
 

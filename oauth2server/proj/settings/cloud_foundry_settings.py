@@ -1,14 +1,17 @@
 __author__ = 'nherriot'
 
+# This settings file is loaded when the system is run via cloud foundry. It's controlled by the manifest_develop_cloudfoundry.yml file in the root folder.
+# Parameters used to make this settings file active are: DJANGO_SETTINGS_MODULE: proj.settings.cloud_foundry_settings.
+
 import sys
 import json
+
 from proj.settings.default import *
 
 remoteLogger = logging.getLogger('remote')
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'tbd(pv7679n_w-t++*s_*oon&#v0ubhkxhzvlq51ko2+=dt*z#'           #TODO inject this variable on production
-
+SECRET_KEY = os.environ.get('SECRET_KEY', 'tbd(pv7679n_w-t++*s_*oon&#v0ubhkxhzvlq51ko2+=dt*z#')
 # Extract the database URI value from VCAP_SERVICES
 
 if 'VCAP_SERVICES' in os.environ:
@@ -31,11 +34,16 @@ else:
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+#        'NAME': 'postgres',                                 #TODO inject this in production.
         'NAME': 'cgklfudq',
+#        'USER': 'postgres',                                 #TODO inject this in production.
         'USER': 'cgklfudq',
+        #'PASSWORD': 'postgres',                             #TODO inject this in production.
         'PASSWORD':'SUEHnEG5I42gCGKXzpgGQ2XT_cZ-PEzi',
+        #'HOST': 'postgres',                                 # Set to using the postgres SQL DB within our docker container. See docker-compose.yml
+                                                            # for information on this within the ras-compose project on Github for ONSDigital
         'HOST':'stampy.db.elephantsql.com',
-        'PORT': '5432',
+        'PORT': '5432',                                     # While running inside our docker container we use the normal port to access postgres
     }
 }
 
