@@ -4,7 +4,9 @@ applications:
   buildpack: https://github.com/cloudfoundry/python-buildpack.git
   memory: 256M
   routes:
-      - route: ras-OAuth2
+    - route: ras-OAuth2
+  services:
+    - oauth-db
   env:
     DEBUG: "False"
     TESTING: "False"
