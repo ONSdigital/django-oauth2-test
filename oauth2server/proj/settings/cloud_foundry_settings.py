@@ -27,11 +27,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'tbd(pv7679n_w-t++*s_*oon&#v0ubhkxhzvl
           "rds": [
            {
             "credentials": {
-             "db_name": "dbfkapanmvevuvb8f",
-             "host": "mvp-applicationdb.cef6vnd8djsq.eu-central-1.rds.amazonaws.com",
-             "password": "g7p3ljwzhto2mm19wkhb6gr8o",
-             "uri": "postgres://uvbaf4yfdrflyap0:g7p3ljwzhto2mm19wkhb6gr8o@mvp-applicationdb.cef6vnd8djsq.eu-central-1.rds.amazonaws.com:5432/dbfkapanmvevuvb8f",
-             "username": "uvbaf4yfdrflyap0"
+             "db_name": "db-foo-bar",
+             "host": "mvp-applicationdb.my-cloud.com",
+             "password": "foo-bar",
+             "uri": "postgres://uri-bla-bla-bla",
+             "username": "user-foo-bar"
             },
             "label": "rds",
             "name": "oauth-db",
@@ -87,16 +87,11 @@ else:
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-#        'NAME': 'postgres',                                 #TODO inject this in production.
         'NAME': DB_NAME,
-#        'USER': 'postgres',                                 #TODO inject this in production.
         'USER': DB_USERNAME,
-        #'PASSWORD': 'postgres',                             #TODO inject this in production.
         'PASSWORD':DB_PASSWORD,
-        #'HOST': 'postgres',                                 # Set to using the postgres SQL DB within our docker container. See docker-compose.yml
-                                                              # for information on this within the ras-compose project on Github for ONSDigital
         'HOST':DB_HOST,
-        'PORT': '5432',                                     # While running inside our docker container we use the normal port to access postgres
+        'PORT': '5432',
     }
 }
 
