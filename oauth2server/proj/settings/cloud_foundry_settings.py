@@ -12,37 +12,84 @@ remoteLogger = logging.getLogger('remote')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'tbd(pv7679n_w-t++*s_*oon&#v0ubhkxhzvlq51ko2+=dt*z#')
-# Extract the database URI value from VCAP_SERVICES
+
+
+### Extract the database URI value from VCAP_SERVICES ###
+# This will search for the env variable VCAP_SERVICES - which indicates we are running on Cloud Foundry. If this is
+# the case we need to extract our dynamic DB settings so we know how to speak to our Postgres DB. We then override the
+# DB settings of our server to use the Cloud Foundry dynamic values.
+"""
+    VCAP_SERVICES exmple:
+
+    System-Provided:
+        {
+         "VCAP_SERVICES": {
+          "rds": [
+           {
+            "credentials": {
+             "db_name": "dbfkapanmvevuvb8f",
+             "host": "mvp-applicationdb.cef6vnd8djsq.eu-central-1.rds.amazonaws.com",
+             "password": "g7p3ljwzhto2mm19wkhb6gr8o",
+             "uri": "postgres://uvbaf4yfdrflyap0:g7p3ljwzhto2mm19wkhb6gr8o@mvp-applicationdb.cef6vnd8djsq.eu-central-1.rds.amazonaws.com:5432/dbfkapanmvevuvb8f",
+             "username": "uvbaf4yfdrflyap0"
+            },
+            "label": "rds",
+            "name": "oauth-db",
+            "plan": "shared-psql",
+            "provider": null,
+            "syslog_drain_url": null,
+            "tags": [
+             "database",
+             "RDS",
+             "postgresql"
+            ],
+            "volume_mounts": []
+           }
+          ]
+         }
+        }
+
+"""
 
 if 'VCAP_SERVICES' in os.environ:
-    remoteLogger.info('VCAP_SERVICES found in os.environ')
-    decoded_config = json.loads(os.environ['VCAP_SERVICES'])
-    for key, value in decoded_config.items():
-        remoteLogger.debug("Inspecting key: {} with value: {}".format(str(key), str(value)))
-        if decoded_config[key][0]['name'] == 'postgresql':
-            creds = decoded_config[key][0]['credentials']
-            uri = creds['uri']
-            remoteLogger.info("Found postgres uri string in vcap settings")
-            remoteLogger.info("Postgres DATABASE uri: {}".format(uri))
+    remoteLogger.info('VCAP_SERVICES found in environment')
+    vcap_config = json.loads(os.environ['VCAP_SERVICES'])
 
+    for key, value in vcap_config.items():
+        remoteLogger.info('Inspecting key: "' + str(key) + '" with value: ' + str(value))
+        if vcap_config[key][0]['name'] == 'oauth-db':
+            vcap_credentials = vcap_config[key][0]['credentials']
+            DB_HOST = vcap_credentials['host']
+            DB_NAME = vcap_credentials['db_name']
+            DB_USERNAME = vcap_credentials['username']
+            DB_PASSWORD = vcap_credentials['password']
+            remoteLogger.info('Postgres DATABASE found ')
+        else:
+            DB_HOST = vcap_credentials['host']
+            DB_NAME = vcap_credentials['postgres']
+            DB_USERNAME = vcap_credentials['postgres']
+            DB_PASSWORD = vcap_credentials['password']
+            remoteLogger.info('VCAP_SERVICES defined but no URI credential found. Using Defaults')
 else:
-    remoteLogger.info('VCAP_SERVICES NOT found in os.environ using default SQL database')
-    #return os.environ.get('SQLALCHEMY_DATABASE_URI', 'postgresql://ras_frontstage_backup:password@localhost:5431/postgres')
-
+    DB_HOST = 'stampy.db.elephantsql.com'
+    DB_NAME = 'cgklfudq'
+    DB_USERNAME = 'cgklfudq'
+    DB_PASSWORD = 'SUEHnEG5I42gCGKXzpgGQ2XT_cZ-PEzi'
+    remoteLogger.info('VCAP_SERVICES NOT found in environment. Using Test Environment')
 
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 #        'NAME': 'postgres',                                 #TODO inject this in production.
-        'NAME': 'cgklfudq',
+        'NAME': DB_NAME,
 #        'USER': 'postgres',                                 #TODO inject this in production.
-        'USER': 'cgklfudq',
+        'USER': DB_USERNAME,
         #'PASSWORD': 'postgres',                             #TODO inject this in production.
-        'PASSWORD':'SUEHnEG5I42gCGKXzpgGQ2XT_cZ-PEzi',
+        'PASSWORD':DB_PASSWORD,
         #'HOST': 'postgres',                                 # Set to using the postgres SQL DB within our docker container. See docker-compose.yml
-                                                            # for information on this within the ras-compose project on Github for ONSDigital
-        'HOST':'stampy.db.elephantsql.com',
+                                                              # for information on this within the ras-compose project on Github for ONSDigital
+        'HOST':DB_HOST,
         'PORT': '5432',                                     # While running inside our docker container we use the normal port to access postgres
     }
 }
