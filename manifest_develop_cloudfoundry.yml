@@ -11,7 +11,10 @@ applications:
     DEBUG: "False"
     TESTING: "False"
     CSRF_ENABLED: "True"
-    SECRET_KEY: this-really-needs-to-be-changed
+    SECRET_KEY:
+    OAUTH2_SUPER_USER: "admin"
+    OAUTH2_SUPER_USER_PASSWORD: "admin2017"
+    OAUTH2_SUPER_USER_EMAIL: "admin@email.com"
     DJANGO_SETTINGS_MODULE: proj.settings.cloud_foundry_settings
 
 
