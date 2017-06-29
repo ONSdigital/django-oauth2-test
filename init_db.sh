@@ -13,6 +13,7 @@
 echo "------ Create database tables ------"
 python oauth2server/manage.py migrate --noinput
  
+# This line will create a super user only if they don't exist. It's needed for startup, and will only create the user at startup
 echo "------ create default oauth2 admin user ------"
-echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@onsemail.com', 'admin2017')" | python oauth2server/manage.py shell
- 
+#echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@onsemail.com', 'admin2017')" | python oauth2server/manage.py shell
+echo "from django.contrib.auth.models import User; if not User.objects.filter(username="admin").exists():User.objects.create_superuser('admin', 'admin@onsemail.com', 'admin2017')" | python oauth2server/manage.py shell
