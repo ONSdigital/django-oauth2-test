@@ -10,12 +10,6 @@ applications:
     TESTING: "False"
     CSRF_ENABLED: "True"
     SECRET_KEY: this-really-needs-to-be-changed
-    dbname: ras_frontstage_backup
-    DB_HOST: stampy.db.elephantsql.com
-    DB_PORT: "5432"
-    DB_USERNAME: cgklfudq
-    DB_PASSWORD: SUEHnEG5I42gCGKXzpgGQ2XT_cZ-PEzi
-    DB_NAME: cgklfudq
     DJANGO_SETTINGS_MODULE: proj.settings.cloud_foundry_settings
 
 
