@@ -51,6 +51,12 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'tbd(pv7679n_w-t++*s_*oon&#v0ubhkxhzvl
 
 """
 
+
+DB_HOST = ''
+DB_NAME = ''
+DB_USERNAME = ''
+DB_PASSWORD = ''
+
 if 'VCAP_SERVICES' in os.environ:
     remoteLogger.info('VCAP_SERVICES found in environment')
     vcap_config = json.loads(os.environ['VCAP_SERVICES'])
