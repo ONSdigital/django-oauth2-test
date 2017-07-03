@@ -28,7 +28,7 @@ class AccountView(APIView):
         :return: Serialised JSON Response Object to indicate the resource has been created
         """
         stdlogger.info( "Hitting post account view method")
-        stdlogger.debug( "User object is: ", request.user )
+        stdlogger.debug( "User object is: {}".format(request.user) )
 
         # Try and persist the user to the DB. Remember this could fail a data integrity check if some other system has
         # saved this user before we run this line of code!
