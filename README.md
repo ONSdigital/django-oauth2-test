@@ -35,6 +35,29 @@ Changes For Ras-OAuth2-Server
 This documents changes implemented for the Ras-OAuth2-Server that allow this solution to be used with the microservice
 framework at ONS.
 
+Setup
+---------
+
+Above and beyond what we do for the original setup there is a django fixtures file that can be run to populate the
+database with 3 test client's and 1 test user. To run the fixture from the oauth2server directory do:
+
+```
+python manage.py loaddata apps/credentials/fixtures/ons_credentials.json
+```
+
+This sets up 3 clients which are:
+
+* partyService@ons.gov.uk
+* frontstageService@ons.gov.uk
+* collectionInstrumentService@ons.gov.uk
+
+And one test user which is:
+
+* testuser@email.com
+
+All with password 'password'.
+
+
 Admin API
 ----------
 
