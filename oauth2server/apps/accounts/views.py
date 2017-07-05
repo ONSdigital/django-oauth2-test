@@ -27,8 +27,7 @@ class AccountView(APIView):
         :param kwargs:
         :return: Serialised JSON Response Object to indicate the resource has been created
         """
-        stdlogger.info( "Hitting post account view method")
-        stdlogger.debug( "User object is: {}".format(request.user) )
+        stdlogger.debug( " Hitting post account view" )
 
         # Try and persist the user to the DB. Remember this could fail a data integrity check if some other system has
         # saved this user before we run this line of code!
@@ -43,11 +42,9 @@ class AccountView(APIView):
         context ={'account': request.user.email, 'created': 'success'}
         json_context = JSONRenderer().render(context)
 
-        stdlogger.debug( "Json content is: {}".format(json_context))
         return Response(data=json_context, status=status.HTTP_201_CREATED,)
 
     @method_decorator(validate_request)
     def get(self, request):
-        stdlogger.info( "Hitting get account view method")
 
         return Response(data={"name":"nherriot@email.com", "id":"0001","status":"deactivated"}, status=status.HTTP_201_CREATED,)

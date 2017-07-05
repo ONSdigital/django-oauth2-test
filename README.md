@@ -12,8 +12,10 @@ This code is taken from a git clone of: https://github.com/RichardKnop/django-oa
 
 
 Written for Django 1.9 :)
-* [Changes For Ras-OAuth2-Server](#Changes For Ras-OAuth2-Server)
-    * [Admin API](#Admin API)
+* [Changes For Ras-OAuth2-Server](#Changes-For-Ras-OAuth2-Server)
+    * [Basic Starting on Localhost](#Basic-Starting-Procedure-on-Local-Machine)
+    * [Data fill Default Test Data](#Setup-Default-Data-for-ONS)
+    * [Admin API](#Admin-API)
 * [Grant Types](#grant-types)
     * [Authorization Code](#authorization-code)
     * [Implicit](#implicit)
@@ -35,8 +37,31 @@ Changes For Ras-OAuth2-Server
 This documents changes implemented for the Ras-OAuth2-Server that allow this solution to be used with the microservice
 framework at ONS.
 
-Setup
----------
+Basic Starting Procedure on Local Machine
+-----------------------------------------
+
+* Migrate Tables. You need to have your settings setup to a valid DB which are in /prot/settings/default.py
+```
+    /> python manage.py migrate
+```
+
+* Add default data using Django fixtures. See next section for details.
+```
+    /> python manage.py loaddata apps/credentials/fixtures/ons_credentials.json
+```
+
+* Create your super user for the Django server. Note this is done automatically on Cloud Foundry
+```
+    /> python manage.py createsuperuser
+```
+
+* Start the server on your dev default port
+```
+    /> python manage.py runserver
+```
+
+Setup Default Data for ONS
+--------------------------
 
 Above and beyond what we do for the original setup there is a django fixtures file that can be run to populate the
 database with 3 test client's and 1 test user. To run the fixture from the oauth2server directory do:

@@ -135,7 +135,7 @@ def validate_request(func):
             'refresh_token',
         )
         if grant_type not in valid_grant_types:
-            stdlogger.warning( "Invalid grant type exception..." )
+            stdlogger.warning( "Invalid grant type exception" )
             raise InvalidGrantTypeException()
 
         # authorization_code grant requires code parameter
@@ -216,7 +216,7 @@ def validate_request(func):
             request.user = user
 
         if grant_type == 'refresh_token':
-            stdlogger.debug( "This is grant_type refresh_code..... Second function")
+            stdlogger.debug( "This is grant_type refresh_code. Second function")
             try:
                 request.refresh_token = OAuthRefreshToken.objects.get(
                     refresh_token=refresh_token)
@@ -237,7 +237,7 @@ def validate_request(func):
 
         # First, let's check Authorization header if present
         if 'HTTP_AUTHORIZATION' in request.META:
-            stdlogger.debug("*** We have a HTTP_AUTHORIZATION request ***. Which is: {}".format(request.META['HTTP_AUTHORIZATION']))
+            stdlogger.debug("*** We have a HTTP_AUTHORIZATION request ***")
             auth_header = request.META['HTTP_AUTHORIZATION']
             auth_method, auth = re.split(':|;|,| ', auth_header)
             #auth_method, auth = request.META['HTTP_AUTHORIZATION'].split(':')

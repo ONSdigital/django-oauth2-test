@@ -33,7 +33,7 @@ def validate_request(view):
                 request=request, error=u'invalid_client',
                 error_description=u'No client id supplied')
         except OAuthClient.DoesNotExist:
-            stdlogger.debug("client id does not exist...")
+            stdlogger.debug("client id does not exist")
             return _error_response(
                 request=request, error=u'invalid_client',
                 error_description=u'The client id supplied is invalid')

@@ -1,6 +1,5 @@
 __author__ = 'nherriot'
 
-import sys
 from proj.settings.default import *
 
 # SECURITY WARNING: keep the secret key used in production secret!

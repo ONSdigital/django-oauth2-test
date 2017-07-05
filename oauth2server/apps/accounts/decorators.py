@@ -57,7 +57,6 @@ def validate_request(func):
 
     stdlogger.info("Validate request decorator being called")
 
-
     def _extract_client(request):
         """
         Tries to extract client_id and client_secret from the request.
@@ -76,7 +75,7 @@ def validate_request(func):
             #auth_method, auth = request.META['HTTP_AUTHORIZATION'].split(':')
             if auth_method.lower() == 'basic':
                 client_id, client_secret = base64.b64decode(auth).split(':')
-                stdlogger.debug("client id is: {} , and client secret is: {}".format(client_id, client_secret))
+                stdlogger.debug("client id is: {}".format(client_id))
 
         # Fallback to POST and then to GET
         if not client_id or not client_secret:
@@ -139,14 +138,14 @@ def validate_request(func):
         except KeyError:
             try:
                 password = request.GET['password']
-                stdlogger.debug( "password from GET is: {}".format(password))
+                stdlogger.debug("password found from HTTP GET")
             except KeyError:
                 raise PasswordRequiredException()
 
         # Check username does not exist in the DB
         try:
             # Try create an OAuthUser object and validate that it's unique. Hence we just instantiate the object.
-            stdlogger.info("Trying to create user: {}".format(username))
+            stdlogger.debug("Trying to create user: {}".format(username))
             user = OAuthUser(email=username, password=password)
             user.validate_unique()
 
@@ -160,7 +159,7 @@ def validate_request(func):
 
 
     def _extract_active(request):
-        stdlogger.info( "Running extracting active method to extract user name and password")
+        stdlogger.info("Running extracting active method to extract user name and password")
 
         """
         Tries to extract username and password from the request.
@@ -193,7 +192,7 @@ def validate_request(func):
         :return:
         """
 
-        stdlogger.info( "Running Extracting scope method from the request to validate a user")
+        stdlogger.info("Running Extracting scope method from the request to validate a user")
 
         if request.grant_type not in ('client_credentials', 'password'):
             return
@@ -217,7 +216,7 @@ def validate_request(func):
             request.scopes = OAuthScope.objects.filter(is_default=True)
 
     def decorator(request, *args, **kwargs):
-        stdlogger.debug( "decorator is hit for administration REST interface...")
+        stdlogger.debug("decorator is hit for administration REST interface...")
         #_validate_grant_type(request=request)
         _extract_client(request=request)
         _extract_username(request=request)

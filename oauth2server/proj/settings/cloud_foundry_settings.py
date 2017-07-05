@@ -1,9 +1,10 @@
 __author__ = 'nherriot'
 
-# This settings file is loaded when the system is run via cloud foundry. It's controlled by the manifest_develop_cloudfoundry.yml file in the root folder.
+# This settings file is loaded when the system is run via cloud foundry.
+# It's invoked by either the Jenkins job injecting the DJANGO_SETTINGS_MODULE or it could be invoked by the:
+# /manifest_develop_cloudfoundry.yml file in the root folder.
 # Parameters used to make this settings file active are: DJANGO_SETTINGS_MODULE: proj.settings.cloud_foundry_settings.
 
-import sys
 import json
 
 from proj.settings.default import *
@@ -75,13 +76,13 @@ if 'VCAP_SERVICES' in os.environ:
             DB_NAME = vcap_credentials['postgres']
             DB_USERNAME = vcap_credentials['postgres']
             DB_PASSWORD = vcap_credentials['password']
-            remoteLogger.info('VCAP_SERVICES defined but no URI credential found. Using Defaults')
+            remoteLogger.warning('VCAP_SERVICES defined but no URI credential found. Using Defaults')
 else:
-    DB_HOST = 'stampy.db.elephantsql.com'
-    DB_NAME = 'cgklfudq'
-    DB_USERNAME = 'cgklfudq'
-    DB_PASSWORD = 'SUEHnEG5I42gCGKXzpgGQ2XT_cZ-PEzi'
-    remoteLogger.info('VCAP_SERVICES NOT found in environment. Using Test Environment')
+    DB_HOST = 'host'
+    DB_NAME = 'dbname'
+    DB_USERNAME = 'user'
+    DB_PASSWORD = 'password'
+    remoteLogger.error('VCAP_SERVICES NOT found in environment. Using no DB engine.')
 
 
 DATABASES = {
