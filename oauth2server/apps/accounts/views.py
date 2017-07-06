@@ -46,5 +46,5 @@ class AccountView(APIView):
 
     @method_decorator(validate_request)
     def get(self, request):
-
-        return Response(data={"name":"nherriot@email.com", "id":"0001","status":"deactivated"}, status=status.HTTP_201_CREATED,)
+        # Leave this for future changes and possibly introspection for getting details of a user
+        return Response(data={"name":"none", "id":"none","status":"none"}, status=status.HTTP_201_CREATED,)
