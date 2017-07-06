@@ -9,7 +9,7 @@ import json
 
 from proj.settings.default import *
 
-remoteLogger = logging.getLogger('remote')
+remote_logger = logging.getLogger('remote')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'tbd(pv7679n_w-t++*s_*oon&#v0ubhkxhzvlq51ko2+=dt*z#')
@@ -59,11 +59,11 @@ DB_USERNAME = ''
 DB_PASSWORD = ''
 
 if 'VCAP_SERVICES' in os.environ:
-    remoteLogger.info('VCAP_SERVICES found in environment')
+    remote_logger.info('VCAP_SERVICES found in environment')
     vcap_config = json.loads(os.environ['VCAP_SERVICES'])
 
     for key, values in vcap_config.items():
-        remoteLogger.info('Inspecting key: "' + str(key) + '" with value: ' + str(value))
+        remote_logger.info('Inspecting key: "' + str(key) + '" with value: ' + str(value))
         if key == 'rds':
             for value in values:
                 credentials = value.get('credentials', {})
@@ -71,19 +71,19 @@ if 'VCAP_SERVICES' in os.environ:
                 DB_NAME = credentials.get('db_name', '')
                 DB_USERNAME = credentials.get('username', '')
                 DB_PASSWORD = credentials.get('password', '')
-                remoteLogger.info('Postgres DATABASE found ')
+                remote_logger.info('Postgres DATABASE found ')
         else:
             DB_HOST = 'host'
             DB_NAME = 'dbname'
             DB_USERNAME = 'user'
             DB_PASSWORD = 'password'
-            remoteLogger.error('VCAP_SERVICES defined but no URI credential found. Not using a DB engine')
+            remote_logger.error('VCAP_SERVICES defined but no URI credential found. Not using a DB engine')
 else:
     DB_HOST = 'host'
     DB_NAME = 'dbname'
     DB_USERNAME = 'user'
     DB_PASSWORD = 'password'
-    remoteLogger.error('VCAP_SERVICES NOT found in environment. Using no DB engine.')
+    remote_logger.error('VCAP_SERVICES NOT found in environment. Using no DB engine.')
 
 
 DATABASES = {

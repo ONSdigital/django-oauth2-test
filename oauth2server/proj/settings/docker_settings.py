@@ -1,9 +1,8 @@
 __author__ = 'nherriot'
 
-import sys
 from proj.settings.default import *
 
-remoteLogger = logging.getLogger('remote')
+remote_logger = logging.getLogger('remote')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'tbd(pv7679n_w-t++*s_*oon&#v0ubhkxhzvlq51ko2+=dt*z#'           #TODO inject this variable on production
