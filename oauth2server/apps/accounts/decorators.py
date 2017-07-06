@@ -69,13 +69,12 @@ def validate_request(func):
 
         # First, let's check Authorization header if present
         if 'HTTP_AUTHORIZATION' in request.META:
-            stdlogger.debug("We have a HTTP_AUTHORIZATION request ***. Which is: {}".format(request.META['HTTP_AUTHORIZATION']))
+            stdlogger.debug("We have a HTTP_AUTHORIZATION request ***")
             auth_header = request.META['HTTP_AUTHORIZATION']
             auth_method, auth = re.split(':|;|,| ', auth_header)
             #auth_method, auth = request.META['HTTP_AUTHORIZATION'].split(':')
             if auth_method.lower() == 'basic':
                 client_id, client_secret = base64.b64decode(auth).split(':')
-                stdlogger.debug("client id is: {}".format(client_id))
 
         # Fallback to POST and then to GET
         if not client_id or not client_secret:
@@ -118,7 +117,6 @@ def validate_request(func):
 
         try:
             username = request.POST['username']
-            stdlogger.info( "username from POST is: {}".format(password))
         except KeyError:
             try:
                 username = request.GET['username']
@@ -134,7 +132,6 @@ def validate_request(func):
 
         try:
             password = request.POST['password']
-            stdlogger.debug( "password from POST is: {}".format(password) )
         except KeyError:
             try:
                 password = request.GET['password']
@@ -145,7 +142,7 @@ def validate_request(func):
         # Check username does not exist in the DB
         try:
             # Try create an OAuthUser object and validate that it's unique. Hence we just instantiate the object.
-            stdlogger.debug("Trying to create user: {}".format(username))
+            stdlogger.debug("Trying to create user")
             user = OAuthUser(email=username, password=password)
             user.validate_unique()
 

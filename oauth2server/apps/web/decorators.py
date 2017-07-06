@@ -24,7 +24,7 @@ def validate_request(view):
     def _wrapper(request, *args, **kwargs):
         # First we check client_id and make sure it's valid
         try:
-            stdlogger.debug( "Client ID Is: {}".format(request.GET['client_id']))
+            stdlogger.debug("Received Client ID")
             request.client = OAuthClient.objects.get(
                 client_id=request.GET['client_id'])
         except KeyError:
