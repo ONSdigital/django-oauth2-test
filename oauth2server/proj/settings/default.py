@@ -111,6 +111,10 @@ LOGGING = {
         'verbose': {
             'format': '[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s','datefmt': '%Y-%m-%d %H:%M:%S'
         },
+        'ons': {
+            'format': ' {"created":"%(asctime)s", "service":"oauth2", "level": "%(levelname)s", "event":"%(message)s", "context": "%(name)s.%(funcName)s:%(lineno)d"  }','datefmt': '%Y-%m-%d %H:%M:%S '
+        },
+
     },
     'handlers': {
         'console': {
@@ -118,13 +122,13 @@ LOGGING = {
             'filters': ['require_debug_true'],
             #'filters': [],                      # Allow all logs to pass to console
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
+            'formatter': 'ons'
         },
         'console_cloud_foundry': {
             'level': 'WARNING',
             'filters': ['require_debug_false'],
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
+            'formatter': 'ons'
         },
 
         'development_logfile': {
@@ -139,14 +143,14 @@ LOGGING = {
             'filters': ['require_debug_false'],
             'class': 'logging.FileHandler',
             'filename': 'oauth2_production.log',
-            'formatter': 'simple'
+            'formatter': 'verbose'
         },
         'remote_logfile': {
             'level': 'DEBUG',
             'filters': ['require_debug_false', 'require_debug_true'],
             'class': 'logging.FileHandler',
             'filename': 'oauth2_remote.log',
-            'formatter': 'simple'
+            'formatter': 'verbose'
         },
         'proj_logfile': {
             'level': 'DEBUG',
@@ -154,7 +158,7 @@ LOGGING = {
             'filters':[],                           # Allow all 'proj' related logs to be sent to this project folder
             'class': 'logging.FileHandler',
             'filename': 'oauth2_proj.log',
-            'formatter': 'simple'
+            'formatter': 'verbose'
         },
     },
     'loggers': {
@@ -165,7 +169,7 @@ LOGGING = {
         },
         # This defines a handler for the namespace proj.*.*
         'proj': {
-            'handlers': ['console', 'development_logfile', 'proj_logfile'],
+            'handlers': ['console', 'console_cloud_foundry', 'development_logfile', 'proj_logfile'],
         },
         # Our remote handler is used for logging anything we want to be logged while the app is running remotely
         'remote': {
