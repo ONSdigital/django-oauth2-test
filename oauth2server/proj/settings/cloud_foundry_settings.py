@@ -62,21 +62,22 @@ if 'VCAP_SERVICES' in os.environ:
     remoteLogger.info('VCAP_SERVICES found in environment')
     vcap_config = json.loads(os.environ['VCAP_SERVICES'])
 
-    for key, value in vcap_config.items():
+    for key, values in vcap_config.items():
         remoteLogger.info('Inspecting key: "' + str(key) + '" with value: ' + str(value))
-        if vcap_config[key][0]['name'] == 'oauth-db':
-            vcap_credentials = vcap_config[key][0]['credentials']
-            DB_HOST = vcap_credentials['host']
-            DB_NAME = vcap_credentials['db_name']
-            DB_USERNAME = vcap_credentials['username']
-            DB_PASSWORD = vcap_credentials['password']
-            remoteLogger.info('Postgres DATABASE found ')
+        if key == 'rds':
+            for value in values:
+                credentials = value.get('credentials', {})
+                DB_HOST = credentials.get('host','')
+                DB_NAME = credentials.get('db_name', '')
+                DB_USERNAME = credentials.get('username', '')
+                DB_PASSWORD = credentials.get('password', '')
+                remoteLogger.info('Postgres DATABASE found ')
         else:
-            DB_HOST = vcap_credentials['host']
-            DB_NAME = vcap_credentials['postgres']
-            DB_USERNAME = vcap_credentials['postgres']
-            DB_PASSWORD = vcap_credentials['password']
-            remoteLogger.warning('VCAP_SERVICES defined but no URI credential found. Using Defaults')
+            DB_HOST = 'host'
+            DB_NAME = 'dbname'
+            DB_USERNAME = 'user'
+            DB_PASSWORD = 'password'
+            remoteLogger.error('VCAP_SERVICES defined but no URI credential found. Not using a DB engine')
 else:
     DB_HOST = 'host'
     DB_NAME = 'dbname'
