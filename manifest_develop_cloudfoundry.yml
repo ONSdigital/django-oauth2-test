@@ -1,0 +1,20 @@
+---
+applications:
+- name: ras-OAuth2
+  buildpack: https://github.com/cloudfoundry/python-buildpack.git
+  memory: 256M
+  routes:
+    - route: ras-OAuth2
+  services:
+    - oauth-db
+  env:
+    DEBUG: "False"
+    TESTING: "False"
+    CSRF_ENABLED: "True"
+    SECRET_KEY:
+    OAUTH2_SUPER_USER: "admin"
+    OAUTH2_SUPER_USER_PASSWORD: "admin2017"
+    OAUTH2_SUPER_USER_EMAIL: "admin@email.com"
+    DJANGO_SETTINGS_MODULE: proj.settings.cloud_foundry_settings
+
+

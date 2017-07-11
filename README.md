@@ -12,8 +12,10 @@ This code is taken from a git clone of: https://github.com/RichardKnop/django-oa
 
 
 Written for Django 1.9 :)
-* [Changes For Ras-OAuth2-Server](#Changes For Ras-OAuth2-Server)
-    * [Admin User](#Admin User)
+* [Changes For Ras-OAuth2-Server](#Changes-For-Ras-OAuth2-Server)
+    * [Basic Starting on Localhost](#Basic-Starting-Procedure-on-Local-Machine)
+    * [Data fill Default Test Data](#Setup-Default-Data-for-ONS)
+    * [Admin API](#Admin-API)
 * [Grant Types](#grant-types)
     * [Authorization Code](#authorization-code)
     * [Implicit](#implicit)
@@ -35,14 +37,83 @@ Changes For Ras-OAuth2-Server
 This documents changes implemented for the Ras-OAuth2-Server that allow this solution to be used with the microservice
 framework at ONS.
 
-Admin User
+Basic Starting Procedure on Local Machine
+-----------------------------------------
+
+* Migrate Tables. You need to have your settings setup to a valid DB which are in /prot/settings/default.py
+```
+    /> python manage.py migrate
+```
+
+* Add default data using Django fixtures. See next section for details.
+```
+    /> python manage.py loaddata apps/credentials/fixtures/ons_credentials.json
+```
+
+* Create your super user for the Django server. Note this is done automatically on Cloud Foundry
+```
+    /> python manage.py createsuperuser
+```
+
+* Start the server on your dev default port
+```
+    /> python manage.py runserver
+```
+
+Setup Default Data for ONS
+--------------------------
+
+Above and beyond what we do for the original setup there is a django fixtures file that can be run to populate the
+database with 3 test client's and 1 test user. To run the fixture from the oauth2server directory do:
+
+```
+python manage.py loaddata apps/credentials/fixtures/ons_credentials.json
+```
+
+This sets up 3 clients which are:
+
+* partyService@ons.gov.uk
+* frontstageService@ons.gov.uk
+* collectionInstrumentService@ons.gov.uk
+
+And one test user which is:
+
+* testuser@email.com
+
+All with password 'password'.
+
+
+Admin API
 ----------
 
-The admin user has been added to the SQLite DB, which is part of the repo.
+The OAuth2 server now has an admin interface. This has it's own REST endpoint to allow a client with the correct
+client_id and client_secret to interact with the Interface.
 
-Username: admin
-Email: admin@email.com
-Password: admin2017
+The endpoint is at /api/account/create and accepts [POST], but will accept a [GET] and query parameters.
+
+* Mandatory Parameters
+
+HTTP Basic Authentication  username: password
+username:       This should be the username to populate the users of the OAuth2 server. It should be in an email format and will be checked to be unique
+password:       This is a password for that user.
+client_id:      This is the client_id making the request to use the admin interface API. This should be the same as the user in the authentication header
+client_secret:  This is the password of the client_id.
+
+```
+
+curl -X POST http://localhost:8040/api/account/create/ -u ons@ons.gov:password -d 'username=testuser4@email.com&password=password&client_id=ons@ons.gov@client_secret=password'
+
+```
+
+* Optional Parameters
+
+scope:          This is a list of coma delimited scopes used to provision this user. This would look like:
+
+"scope": "foo bar respondent.read respondent.write"
+
+```
+-d 'username=testuser4@email.com&password=password&scope=foo&scope=bar&scope=respondent.read&scope=respondent.wirte ....
+```
 
 
 Good Version of CURL for grant_type = password
@@ -73,6 +144,24 @@ You also need a valid access code to get your token. You could get this with:
 
 http://localhost:8000/web/authorize/?response_type=code&client_id=onc%40onc.gov&redirect_uri=https://www.example.com&state=somestate
 
+
+Cloud Foundry
+=============
+
+The application has manifest, Procfile and an init_db.sh script to allow it to be pushed to cloud foundry easily.
+
+The manifest_develop_cloudfoundry.yml defines a basic server which needs a bouNd service called oauth-db. This will
+dynamically pick a DB config from Cloud Foundry which are environment variables exposed at run time. You will need to
+create a CF postgres service with this name.
+
+The Procfile will migrate the database and on first load the init_db.sh script will create a super user. This shell
+script is idempotent so can be deployed multiple times to the same system. The profile will then call up the runserver
+command and run the system on default port 8080.
+
+The manifest file also sets the DJANGO_SETTINGS_MODULE to the cloud_foundry_settings.py file which pics up all the
+dynamic variables.
+
+*TODO - To productionize this the server has to be bound to a WSGI server. e.g. [NGINX]( https://www.nginx.com/resources/wiki/)
 
 
 

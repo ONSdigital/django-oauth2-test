@@ -5,6 +5,10 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework import status
 from django.utils.decorators import method_decorator
 from django.db import IntegrityError, InternalError, DataError, DatabaseError
+import logging
+
+stdlogger = logging.getLogger(__name__)
+
 
 from apps.tokens.serializers import OAuthAccessTokenSerializer
 from apps.accounts.decorators import validate_request
@@ -23,8 +27,7 @@ class AccountView(APIView):
         :param kwargs:
         :return: Serialised JSON Response Object to indicate the resource has been created
         """
-        print "hitting post account view"
-        print "User object is: ", request.user
+        stdlogger.debug( " Hitting post account view" )
 
         # Try and persist the user to the DB. Remember this could fail a data integrity check if some other system has
         # saved this user before we run this line of code!
@@ -37,21 +40,11 @@ class AccountView(APIView):
             raise DatabaseFailureException
 
         context ={'account': request.user.email, 'created': 'success'}
-        print context
         json_context = JSONRenderer().render(context)
 
-        print json_context
         return Response(data=json_context, status=status.HTTP_201_CREATED,)
 
     @method_decorator(validate_request)
     def get(self, request):
-        print "hitting get account view"
-
-        return Response(data={"name":"nherriot@email.com", "id":"0001","status":"deactivated"}, status=status.HTTP_201_CREATED,)
-
-
-
-def hello_world(request):
-    print "hello world"
-
-    return("hello world")
+        # Leave this for future changes and possibly introspection for getting details of a user
+        return Response(data={"name":"none", "id":"none","status":"none"}, status=status.HTTP_201_CREATED,)

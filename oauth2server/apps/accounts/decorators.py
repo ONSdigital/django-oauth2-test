@@ -6,6 +6,10 @@ from django.utils.decorators import available_attrs
 from django.core.validators import validate_email
 from django.conf import settings
 
+import logging
+
+stdlogger = logging.getLogger(__name__)
+
 from apps.credentials.models import (
     OAuthClient,
     OAuthUser,
@@ -50,7 +54,8 @@ def validate_request(func):
     :param func:
     :return: decorator
     """
-    print("in the account validate request decorator")
+
+    stdlogger.info("Validate request decorator being called")
 
     def _extract_client(request):
         """
@@ -64,17 +69,16 @@ def validate_request(func):
 
         # First, let's check Authorization header if present
         if 'HTTP_AUTHORIZATION' in request.META:
-            print "*** We have a HTTP_AUTHORIZATION request ***. Which is: {}".format(request.META['HTTP_AUTHORIZATION'])
+            stdlogger.debug("We have a HTTP_AUTHORIZATION request ***")
             auth_header = request.META['HTTP_AUTHORIZATION']
             auth_method, auth = re.split(':|;|,| ', auth_header)
             #auth_method, auth = request.META['HTTP_AUTHORIZATION'].split(':')
             if auth_method.lower() == 'basic':
                 client_id, client_secret = base64.b64decode(auth).split(':')
-                print "client id is: {} , and client secret is: {}".format(client_id, client_secret)
 
         # Fallback to POST and then to GET
         if not client_id or not client_secret:
-            print "hit client id"
+            stdlogger.info("Hit client check for a missing variable")
             try:
                 client_id = request.POST['client_id']
                 client_secret = request.POST['client_secret']
@@ -83,7 +87,7 @@ def validate_request(func):
                     client_id = request.GET['client_id']
                     client_secret = request.GET['client_secret']
                 except KeyError:
-                    print "Those muppets forgot the client_id and client_secret in a POST and GET method!!"
+                    stdlogger.warning("Client ID and Client Secret is missing from the POST and GET method")
                     raise ClientCredentialsRequiredException()
 
         # Check client exists
@@ -97,8 +101,6 @@ def validate_request(func):
             raise InvalidClientCredentialsException()
 
         request.client = client
-        #for key in request:
-        #    print "key is: {} and value is: {}".format(key, request[key])
 
     def _extract_username(request):
         """
@@ -109,13 +111,12 @@ def validate_request(func):
         :return:
         """
 
-        print "In _extract_username"
+        stdlogger.debug(" In _extract_username method for validating a request")
 
         username, password = None, None
 
         try:
             username = request.POST['username']
-            print "username from POST is: {}".format(password)
         except KeyError:
             try:
                 username = request.GET['username']
@@ -126,28 +127,27 @@ def validate_request(func):
             validate_email(username)
 
         except ValidationError:
-            print "email failed validation check"
+            stdlogger.warning("email failed validation check for validating a user")
             raise InvalidUserCredentialsException
 
         try:
             password = request.POST['password']
-            print "password from POST is: {}".format(password)
         except KeyError:
             try:
                 password = request.GET['password']
-                print "password from GET is: {}".format(password)
+                stdlogger.debug("password found from HTTP GET")
             except KeyError:
                 raise PasswordRequiredException()
 
         # Check username does not exist in the DB
         try:
             # Try create an OAuthUser object and validate that it's unique. Hence we just instantiate the object.
-            print "Trying to create user: {} with password: {}".format(username, password)
+            stdlogger.debug("Trying to create user")
             user = OAuthUser(email=username, password=password)
             user.validate_unique()
 
         except ValidationError:
-            print "we failed username check for creating a user"
+            stdlogger.warning( "we failed username check for creating a user")
             raise DuplicateUserException
 
         # OK we pass all validation checks pass the user object back in the request
@@ -156,7 +156,7 @@ def validate_request(func):
 
 
     def _extract_active(request):
-        print "Running extracting active"
+        stdlogger.info("Running extracting active method to extract user name and password")
 
         """
         Tries to extract username and password from the request.
@@ -189,7 +189,7 @@ def validate_request(func):
         :return:
         """
 
-        print "Extracting scope"
+        stdlogger.info("Running Extracting scope method from the request to validate a user")
 
         if request.grant_type not in ('client_credentials', 'password'):
             return
@@ -213,7 +213,7 @@ def validate_request(func):
             request.scopes = OAuthScope.objects.filter(is_default=True)
 
     def decorator(request, *args, **kwargs):
-        print "decorator hit for admin REST interface..."
+        stdlogger.debug("decorator is hit for administration REST interface...")
         #_validate_grant_type(request=request)
         _extract_client(request=request)
         _extract_username(request=request)

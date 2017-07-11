@@ -1,7 +1,10 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-
 from apps.credentials.models import OAuthClient
+
+import logging
+
+stdlogger = logging.getLogger(__name__)
 
 
 def validate_request(view):
@@ -21,16 +24,16 @@ def validate_request(view):
     def _wrapper(request, *args, **kwargs):
         # First we check client_id and make sure it's valid
         try:
-            #print "Client ID Is: ", request.GET['client_id']
+            stdlogger.debug("Received Client ID")
             request.client = OAuthClient.objects.get(
                 client_id=request.GET['client_id'])
         except KeyError:
-            #print "client id is not correct"
+            stdlogger.debug("client id is not correct")
             return _error_response(
                 request=request, error=u'invalid_client',
                 error_description=u'No client id supplied')
         except OAuthClient.DoesNotExist:
-            #print "client id does not exist..."
+            stdlogger.debug("client id does not exist")
             return _error_response(
                 request=request, error=u'invalid_client',
                 error_description=u'The client id supplied is invalid')
