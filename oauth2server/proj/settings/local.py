@@ -33,15 +33,19 @@ DATABASES = {
 DEBUG = True                                                # Set to false on Production
 
 OAUTH2_SERVER = {
-   'ACCESS_TOKEN_LIFETIME': 3600,
-   'AUTH_CODE_LIFETIME': 3600,
-   'REFRESH_TOKEN_LIFETIME': 3600,
-   'IGNORE_CLIENT_REQUESTED_SCOPE': False,
+    'ACCESS_TOKEN_LIFETIME': 3600,
+    'AUTH_CODE_LIFETIME': 3600,
+    'REFRESH_TOKEN_LIFETIME': 3600,
+    'IGNORE_CLIENT_REQUESTED_SCOPE': False,
+    'SET_AUTH_USER_ACTIVE_ON_REGISTRATION':False,           # when a new oauth user is added they are set as active by default if flag is set as true
+
 }
 
 
 # This defined the max number of failed logins a user can have before the account is locked
 MAX_FAILED_LOGINS = 10
+
+
 
 # Standard instance of a logger with __name__. We are using this so that our root folder has our logger defined.
 stdlogger = logging.getLogger(__name__)
