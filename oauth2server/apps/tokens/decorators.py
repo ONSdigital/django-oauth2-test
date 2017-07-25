@@ -300,7 +300,7 @@ def validate_request(func):
             request.scopes = OAuthScope.objects.filter(is_default=True)
 
     def decorator(request, *args, **kwargs):
-        stdlogger.debug("Decorator called for Validating requests")
+        stdlogger.debug("Decorator called for Validating OAuth2 requests")
         _validate_grant_type(request=request)
         _extract_client(request=request)
         _extract_scope(request=request)

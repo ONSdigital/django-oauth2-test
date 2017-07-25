@@ -14,7 +14,51 @@ from apps.tokens.serializers import OAuthAccessTokenSerializer
 from apps.accounts.decorators import validate_request
 
 
+
+class AccountActivateView(APIView):
+
+
+    @method_decorator(validate_request)
+    def post(self, request, *args, **kwargs):
+        """
+        Take the user object from the request and update the 'active' flag on the OAuth user in the DB.
+        If this succeeds then we can report a success. If it does not then the user does not exist or there is a
+        protocol error.
+
+        :param request:
+        :param args:
+        :param kwargs:
+        :return: Serialised JSON Response Object to indicate the resource has been created
+        """
+        stdlogger.debug(" Activating the users account view")
+
+        # Try and persist the user to the DB. Remember this could fail a data integrity check if some other system has
+        # saved this user before we run this line of code!
+        try:
+            stdlogger.debug("***************************************************************")
+
+            request.user.save()
+
+        except (IntegrityError, InternalError, DataError, DatabaseError):
+            # The chances of this happening are slim to none! And this line of code should never happen. So we really
+            # need to tell the other system we are not capable of creating the resource.
+            raise DatabaseFailureException
+
+        context ={'account': request.user.email, 'created': 'success'}
+        json_context = JSONRenderer().render(context)
+
+        return Response(data=json_context, status=status.HTTP_201_CREATED,)
+
+    @method_decorator(validate_request)
+    def get(self, request):
+        # Leave this for future changes and possibly introspection for getting details of a user
+        return Response(data={"name":"none", "id":"none","status":"none"}, status=status.HTTP_201_CREATED,)
+
+
+
 class AccountView(APIView):
+
+    greetings = "hello how are you"
 
     @method_decorator(validate_request)
     def post(self, request, *args, **kwargs):
@@ -32,6 +76,11 @@ class AccountView(APIView):
         # Try and persist the user to the DB. Remember this could fail a data integrity check if some other system has
         # saved this user before we run this line of code!
         try:
+            print(request.user.email)
+            print(request.user.password)
+            print(request.user.account_is_verified)
+
+
             request.user.save()
 
         except (IntegrityError, InternalError, DataError, DatabaseError):
@@ -46,5 +95,13 @@ class AccountView(APIView):
 
     @method_decorator(validate_request)
     def get(self, request):
+        # Leave this for future changes and possibly introspection for getting details of a user
+        return Response(data={"name":"none", "id":"none","status":"none"}, status=status.HTTP_201_CREATED,)
+
+    def put(self, request):
+        # Leave this for future changes and possibly introspection for getting details of a user
+        return Response(data={"name":"none", "id":"none","status":"none"}, status=status.HTTP_201_CREATED,)
+
+    def delete(self, request):
         # Leave this for future changes and possibly introspection for getting details of a user
         return Response(data={"name":"none", "id":"none","status":"none"}, status=status.HTTP_201_CREATED,)

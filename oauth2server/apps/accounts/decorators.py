@@ -67,6 +67,8 @@ def validate_request(func):
         """
         client_id, client_secret = None, None
 
+
+
         # First, let's check Authorization header if present
         if 'HTTP_AUTHORIZATION' in request.META:
             stdlogger.debug("We have a HTTP_AUTHORIZATION request ***")
@@ -102,13 +104,19 @@ def validate_request(func):
 
         request.client = client
 
-    def _extract_username(request):
+    def _extract_username(request, **kwargs):
         """
         Tries to extract username and password from the request.
         It first looks for Authorization header, then tries POST data.
         Assigns client object to the request for later use.
-        :param request:
-        :return:
+        It checks kwargs to see if this is an:
+            admin 'add',
+            admin 'set active',
+            admin 'set password' or
+            admin 'set active'
+
+        :param request, **kwargs:
+        :return request:
         """
 
         stdlogger.debug(" In _extract_username method for validating a request")
@@ -130,6 +138,8 @@ def validate_request(func):
             stdlogger.warning("email failed validation check for validating a user")
             raise InvalidUserCredentialsException
 
+        stdlogger.debug("***** validation check kwargs are: {} *****".format(kwargs))
+        #stdlogger.debug("***** validation check args are: {} *****".format(args))
         try:
             password = request.POST['password']
         except KeyError:
@@ -143,7 +153,7 @@ def validate_request(func):
         try:
             # Try create an OAuthUser object and validate that it's unique. Hence we just instantiate the object.
             stdlogger.debug("Trying to create user")
-            user = OAuthUser(email=username, password=password)
+            user = OAuthUser(email=username, password=password, account_is_verified=False)
             user.validate_unique()
 
         except ValidationError:
@@ -156,28 +166,56 @@ def validate_request(func):
 
 
     def _extract_active(request):
-        stdlogger.info("Running extracting active method to extract user name and password")
+        stdlogger.info("Extracting account verified flag")
 
         """
-        Tries to extract username and password from the request.
-        It first looks for Authorization header, then tries POST data.
+        Tries to extract the account verified flag from the HTTP Message.
+        If it is a POST the attribute is optional - defaults to False when created.
+        If it is a PUT the attribute is optional - defaults to the current value.
+        If it is a GET / DELETE it is optional - has no effect on result and not used in query 
+        
         Assigns client object to the request for later use.
         :param request:
-        :return:
+        :return request:
         """
 
-        try:
-            accountVerified = request.POST['account_verified']
-            request.user.account_is_verified = accountVerified
-        except KeyError:
+        if request.method == 'POST':
             try:
-                accountVerified = request.GET['account_verified']
-                request.user.account_is_verified = accountVerified
+                account_verified = request.POST['account_verified']
+                request.user.account_is_verified = account_verified
+                stdlogger.debug("Extracting account verified flag successful")
             except KeyError:
-                #raise UsernameRequiredException()
                 # This is an optional parameter so set it as false if it is not present
                 request.user.account_is_verified = False
-                request.account_verified = False
+
+
+        if request.method == 'GET':
+            try:
+                account_verified = request.GET['account_verified']
+                request.user.account_is_verified = account_verified
+            except KeyError:
+                # This is an optional parameter so set it as false if it is not present
+                pass
+
+
+        if request.method == 'PUT':
+            try:
+                account_verified = request.PUT['account_verified']
+                request.user.account_is_verified = account_verified
+            except KeyError:
+                # This is an optional parameter so set it as false if it is not present
+                request.user.account_is_verified = False
+
+
+        if request.method == 'DELETE':
+            try:
+                account_verified = request.DELETE['account_verified']
+                request.user.account_is_verified = account_verified
+            except KeyError:
+                # This is an optional parameter so set it as false if it is not present
+                pass
+
+
 
 
     def _extract_scope(request):
@@ -214,9 +252,19 @@ def validate_request(func):
 
     def decorator(request, *args, **kwargs):
         stdlogger.debug("decorator is hit for administration REST interface...")
-        #_validate_grant_type(request=request)
+
+        if request.method == 'GET':
+            stdlogger.debug("***** decorator method hit! .... This is a HTTP GET message")
+        if request.method == 'POST':
+            stdlogger.debug("***** decorator method hit! .... This is a HTTP POST message")
+        if request.method == 'PUT':
+            stdlogger.debug("***** decorator method hit! .... This is a HTTP PUT message")
+        if request.method == 'DELETE':
+            stdlogger.debug("***** decorator method hit! .... This is a HTTP DELETE message")
+
+
         _extract_client(request=request)
-        _extract_username(request=request)
+        _extract_username(request=request, *args, **kwargs)
         _extract_active(request=request)
         #_extract_scope(request=request)
 
