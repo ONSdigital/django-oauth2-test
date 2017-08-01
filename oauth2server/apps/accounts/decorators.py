@@ -94,8 +94,8 @@ def validate_request(func):
 
         if request.method == 'PUT':
             try:
-                client_id = request.PUT['client_id']
-                client_secret = request.PUT['client_secret']
+                client_id = request.POST['client_id']
+                client_secret = request.POST['client_secret']
             except KeyError:
                 stdlogger.warning("Client ID and Client Secret is missing from the PUT method")
                 raise ClientCredentialsRequiredException()
@@ -110,8 +110,8 @@ def validate_request(func):
 
         if request.method == 'DELETE':
             try:
-                client_id = request.DELETE['client_id']
-                client_secret = request.DELETE['client_secret']
+                client_id = request.POST['client_id']
+                client_secret = request.POST['client_secret']
             except KeyError:
                 stdlogger.warning("Client ID and Client Secret is missing from the DELETE method")
                 raise ClientCredentialsRequiredException()
@@ -173,7 +173,7 @@ def validate_request(func):
 
         if request.method == 'PUT':
             try:
-                username = request.PUT['username']
+                username = request.POST['username']
                 validate_email(username)
                 user = OAuthUser.objects.get(email=username)
             except KeyError:
@@ -187,11 +187,24 @@ def validate_request(func):
                 raise UnknownUserException
 
             try:
-                password = request.PUT['password']
+                new_username = request.POST['new_username']
+                validate_email(new_username)
+                request.new_user = new_username
+            except KeyError:
+                # We don't do anything if a new_user is not specified as it is optional. So set it to none.
+                stdlogger.info("This PUT method does not specify a new user.")
+                request.new_user = None
+            except ValidationError:
+                stdlogger.warning("Email failed validation check for validating a user")
+                raise InvalidUserCredentialsException
+
+            try:
+                password = request.POST['password']
+                user.password = password
             except KeyError:
                 # If password is missing then it's not changing so set it as none. This is an optional parm
                 stdlogger.info("Password is missing from the PUT method of a user.")
-                password = None
+                user.password = None
 
         # We can ignore even detecting the 'password' in the GET as it's not used.
         if request.method == 'GET':
@@ -210,22 +223,22 @@ def validate_request(func):
                     "Error while getting the User ID. The email: {} does not exist on the OAuth2 server".format(username))
                 raise UnknownUserException
 
-            # We can ignore even detecting the 'password' in the DELETE as it's not used.
-            if request.method == 'DELETE':
-                try:
-                    username = request.DELETE['username']
-                    validate_email(username)
-                    user = OAuthUser.objects.get(email=username)
-                except KeyError:
-                    stdlogger.warning("Username is missing from the DELETE method")
-                    raise UsernameRequiredException()
-                except ValidationError:
-                    stdlogger.warning("Email failed validation check for validating a user")
-                    raise InvalidUserCredentialsException
-                except OAuthUser.DoesNotExist:
-                    stdlogger.error(
-                        "Error while trying to DELETE the User. The email: {} does not exist on the OAuth2 server".format(username))
-                    raise UnknownUserException
+        # We can ignore even detecting the 'password' in the DELETE as it's not used.
+        if request.method == 'DELETE':
+            try:
+                username = request.POST['username']
+                validate_email(username)
+                user = OAuthUser.objects.get(email=username)
+            except KeyError:
+                stdlogger.warning("Username is missing from the DELETE method")
+                raise UsernameRequiredException()
+            except ValidationError:
+                stdlogger.warning("Email failed validation check for validating a user")
+                raise InvalidUserCredentialsException
+            except OAuthUser.DoesNotExist:
+                stdlogger.error(
+                    "Error while trying to DELETE the User. The email: {} does not exist on the OAuth2 server".format(username))
+                raise UnknownUserException
 
 
        # # Check username does not exist in the DB
@@ -273,7 +286,7 @@ def validate_request(func):
 
         if request.method == 'PUT':
             try:
-                account_verified = request.PUT['account_verified']
+                account_verified = request.POST['account_verified']
                 if account_verified == u'true':
                     request.user.account_is_verified = True
                 if account_verified == u'false':
