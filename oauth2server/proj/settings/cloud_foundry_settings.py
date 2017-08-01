@@ -63,7 +63,7 @@ if 'VCAP_SERVICES' in os.environ:
     vcap_config = json.loads(os.environ['VCAP_SERVICES'])
 
     for key, values in vcap_config.items():
-        remote_logger.info('Inspecting key: "' + str(key) + '" with value: ' + str(value))
+        remote_logger.info('Inspecting key: "' + str(key) + '" with value: ' + str(values))
         if key == 'rds':
             for value in values:
                 credentials = value.get('credentials', {})
