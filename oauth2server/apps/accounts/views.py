@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
@@ -10,14 +9,13 @@ import logging
 stdlogger = logging.getLogger(__name__)
 
 
-from apps.tokens.serializers import OAuthAccessTokenSerializer
 from apps.accounts.decorators import validate_request
+from proj.exceptions import DatabaseFailureException
 
 
 
 class AccountView(APIView):
 
-    greetings = "hello how are you"
 
     @method_decorator(validate_request)
     def post(self, request, *args, **kwargs):
@@ -49,9 +47,10 @@ class AccountView(APIView):
 
     @method_decorator(validate_request)
     def get(self, request):
-        stdlogger.debug( " Hitting HTTP GET account view" )
+        #TODO The get should be supplied to provide introspection for admin functions
+        stdlogger.debug(" Hitting HTTP GET account view" )
         # Leave this for future changes and possibly introspection for getting details of a user
-        return Response(data={"name":"none", "id":"none","status":"none"}, status=status.HTTP_201_CREATED,)
+        return Response(data={"name": "none", "id": "none", "status": "none"}, status=status.HTTP_201_CREATED,)
 
     @method_decorator(validate_request)
     def put(self, request):
@@ -73,9 +72,9 @@ class AccountView(APIView):
         try:
             # Check to see if this PUT is changing the user ID. If it is, then keep the same user object with Primary
             # Key and change the email to the new one.
-            if request.new_user:
-                stdlogger.info("Admin is updating a user ID to a new value. Changing user ID: {} to {}".format(request.user.email, request.new_user))
-                request.user.email = request.new_user
+            if request.new_username:
+                stdlogger.info("Admin is updating a user ID to a new value. Changing user ID: {} to {}".format(request.user.email, request.new_username))
+                request.user.email = request.new_username
             request.user.save()
 
         except (IntegrityError, InternalError, DataError, DatabaseError):

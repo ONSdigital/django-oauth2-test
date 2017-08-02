@@ -1,11 +1,9 @@
 import base64
 import re
-from functools import wraps
 
-from django.utils.decorators import available_attrs
+from functools import wraps
 from django.core.validators import validate_email
 from django.conf import settings
-#from django.models import DoesNotExist
 
 import logging
 
@@ -15,37 +13,20 @@ from apps.credentials.models import (
     OAuthClient,
     OAuthUser,
     ValidationError,
-    #OAuthUser.DoesNotExist,
 )
 from apps.tokens.models import (
-    OAuthAuthorizationCode,
-    OAuthAccessToken,
-    OAuthRefreshToken,
     OAuthScope,
 )
 from proj.exceptions import (
-    GrantTypeRequiredException,
-    InvalidGrantTypeException,
-    CodeRequiredException,
     UsernameRequiredException,
     PasswordRequiredException,
-    RefreshTokenRequiredException,
-    AccessTokenRequiredException,
-    InvalidAccessTokenException,
-    ExpiredAccessTokenException,
-    InsufficientScopeException,
     ClientCredentialsRequiredException,
     InvalidClientCredentialsException,
     UserAccountLockedException,
     InvalidUserCredentialsException,
-    AuthorizationCodeNotFoundException,
-    RefreshTokenNotFoundException,
     DuplicateUserException,
     UnknownUserException,
 )
-
-
-
 
 
 def validate_request(func):
@@ -170,7 +151,6 @@ def validate_request(func):
                 stdlogger.warning("We failed username check for creating a user in the HTTP POST. This user already exists")
                 raise DuplicateUserException
 
-
         if request.method == 'PUT':
             try:
                 username = request.POST['username']
@@ -187,16 +167,25 @@ def validate_request(func):
                 raise UnknownUserException
 
             try:
+                # If we are changing the users ID, we need to check he is not over-writing a different user
                 new_username = request.POST['new_username']
                 validate_email(new_username)
-                request.new_user = new_username
+                check_user = OAuthUser.objects.get(email=new_username)
+                if check_user:
+                    stdlogger.warning("The user: {} tried to change their email to the already active user: {}".format(username, new_username))
+                    raise DuplicateUserException
+
             except KeyError:
                 # We don't do anything if a new_user is not specified as it is optional. So set it to none.
                 stdlogger.info("This PUT method does not specify a new user.")
-                request.new_user = None
+                request.new_username = None
             except ValidationError:
                 stdlogger.warning("Email failed validation check for validating a user")
                 raise InvalidUserCredentialsException
+            except OAuthUser.DoesNotExist:
+                # This is not an error. We actually want the new_user variable to not be used in our DB. It means it's
+                # not used. Hence we can use the new name to change the current user ID to the new name! Thimpless :-)
+                request.new_username = new_username
 
             try:
                 password = request.POST['password']
@@ -239,18 +228,6 @@ def validate_request(func):
                 stdlogger.error(
                     "Error while trying to DELETE the User. The email: {} does not exist on the OAuth2 server".format(username))
                 raise UnknownUserException
-
-
-       # # Check username does not exist in the DB
-       #  try:
-       #      # Try create an OAuthUser object and validate that it's unique. Hence we just instantiate the object.
-       #      stdlogger.debug("Trying to create user")
-       #      user = OAuthUser(email=username, password=password, account_is_verified=False)
-       #      user.validate_unique()
-       #
-       #  except ValidationError:
-       #      stdlogger.warning( "we failed username check for creating a user")
-       #      raise DuplicateUserException
 
         # OK we pass all validation checks pass the user object back in the request
         request.user = user
@@ -331,25 +308,27 @@ def validate_request(func):
         if len(request.scopes) == 0:
             request.scopes = OAuthScope.objects.filter(is_default=True)
 
+    def _extract_account_locked(request):
+        #TODO add in the detecting of this attribute
+        pass
+
+    def _extract_failed_logins(request):
+        #TODO add in the detecting of this attribute
+        pass
+
     def decorator(request, *args, **kwargs):
         stdlogger.debug("decorator is hit for administration REST interface...")
-
-        if request.method == 'GET':
-            stdlogger.debug("***** decorator method hit! .... This is a HTTP GET message")
-        if request.method == 'POST':
-            stdlogger.debug("***** decorator method hit! .... This is a HTTP POST message")
-        if request.method == 'PUT':
-            stdlogger.debug("***** decorator method hit! .... This is a HTTP PUT message")
-        if request.method == 'DELETE':
-            stdlogger.debug("***** decorator method hit! .... This is a HTTP DELETE message")
-
 
         _extract_client(request=request)
         _extract_username(request=request, *args, **kwargs)
         _extract_active(request=request)
         #_extract_scope(request=request)
+        #_extract_account_locked(request=request)
+        #_extract_failed_login(request=request)
 
         return func(request, *args, **kwargs)
 
     return decorator
+
+
 
