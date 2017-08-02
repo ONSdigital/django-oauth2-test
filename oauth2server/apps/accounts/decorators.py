@@ -193,7 +193,7 @@ def validate_request(func):
             except KeyError:
                 # If password is missing then it's not changing so set it as none. This is an optional parm
                 stdlogger.info("Password is missing from the PUT method of a user.")
-                user.password = None
+                pass
 
         # We can ignore even detecting the 'password' in the GET as it's not used.
         if request.method == 'GET':

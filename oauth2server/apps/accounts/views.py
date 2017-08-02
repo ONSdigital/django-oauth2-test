@@ -65,7 +65,7 @@ class AccountView(APIView):
         :return: Serialised JSON Response Object to indicate the resource has been created
         """
 
-        stdlogger.debug( " Hitting HTTP PUT account view" )
+        stdlogger.debug(" Hitting HTTP PUT account view" )
 
         # Try and persist the user to the DB. Remember this could fail a data integrity check if some other system has
         # saved this user before we run this line of code!
