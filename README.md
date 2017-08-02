@@ -89,11 +89,14 @@ Admin API
 The OAuth2 server now has an admin interface. This has it's own REST endpoint to allow a client with the correct
 client_id and client_secret to interact with the Interface.
 
-The endpoint is at /api/account/create and accepts [POST], but will accept a [GET] and query parameters.
+The endpoint is at /api/account/create and accepts [POST],[PUT] and [DELETE] but [GET] is not implemented yet.
 
-* Mandatory Parameters
+### HTTP POST Message
 
-HTTP Basic Authentication  username: password
+* Mandatory Parameters [POST]
+In other words to create a new user
+
+HTTP Basic Authentication  client_id: client_secret
 username:       This should be the username to populate the users of the OAuth2 server. It should be in an email format and will be checked to be unique
 password:       This is a password for that user.
 client_id:      This is the client_id making the request to use the admin interface API. This should be the same as the user in the authentication header
@@ -107,13 +110,83 @@ curl -X POST http://localhost:8040/api/account/create/ -u ons@ons.gov:password -
 
 * Optional Parameters
 
-scope:          This is a list of coma delimited scopes used to provision this user. This would look like:
+scope:              This is a list of coma delimited scopes used to provision this user. This would look like:
+account_verified    This is a boolean flag in the database so should be either 'true' or 'false'
 
 "scope": "foo bar respondent.read respondent.write"
+"account_verified":"true"
 
 ```
--d 'username=testuser4@email.com&password=password&scope=foo&scope=bar&scope=respondent.read&scope=respondent.wirte ....
+-d 'username=testuser4@email.com&password=password&scope=foo&scope=bar&scope=respondent.read&scope=respondent.wirte.....&account_verified=true'
 ```
+
+### HTTP DELETE Message
+
+* Mandatory Parameters [DELETE]
+This will delete a user.
+
+HTTP Basic Authentication  client_id: client_secret
+username:       This should be the username to populate the users of the OAuth2 server. It should be in an email format and will be checked to be unique
+client_id:      This is the client_id making the request to use the admin interface API. This should be the same as the user in the authentication header
+client_secret:  This is the password of the client_id.
+
+```
+
+curl -X DELETE http://localhost:8040/api/account/create/ -u ons@ons.gov:password -d 'username=testuser5@email.com&client_id=ons@ons.gov&client_secret=password'
+
+```
+
+### HTTP PUT Message
+
+* Mandatory Parameters [PUT]
+This allows the client to update user accounts.
+HTTP Basic Authentication  client_id: client_secret
+username:       This should be the username to target the change on the OAuth2 server. It should be in an email format and will be checked to exist.
+client_id:      This is the client_id making the request to use the admin interface API. This should be the same as the user in the authentication header
+client_secret:  This is the password of the client_id.
+
+```
+
+curl -X PUT http://localhost:8008/api/account/create/ -u ons@ons.gov:password -d 'username=testuser5@email.com&client_id=ons@ons.gov&client_secret=password'
+
+```
+
+Note, the above PUT curl command will not actually change anything for that user. To change anything you need to specifiy one or all of the optional parameters.
+
+* Optional Parameters
+
+password:           The password of the user. If it's not present the password will not be changed.
+scope:              This is a list of coma delimited scopes used to provision this user. This would look like:
+account_verified    This is a boolean flag in the database so should be either 'true' or 'false'.
+new_username        This is the new user ID of a user if they are to be updated. In this case the new_username has to be unique to the database or will fail
+					with a duplicate user error.
+"scope": "foo bar respondent.read respondent.write"
+"account_verified":"true"
+
+Some examples are:
+
+1) To update the account_verified to be true:
+
+```
+
+curl -X PUT http://localhost:8008/api/account/create/ -u ons@ons.gov:password -d 'username=testuser@email.com&client_id=ons@ons.gov&client_secret=password&account_verified=true'
+
+```
+
+2) To update the account_verified and password:
+
+```
+curl -X PUT http://localhost:8008/api/account/create/ -u ons@ons.gov:password -d 'username=testuser5@email.com&client_id=ons@ons.gov&client_secret=password&password=Passw0rd.&account_verified=true'
+```
+
+3) To update the password, account_verified and change the user name to a new email address:
+
+```
+
+curl -X PUT http://localhost:8008/api/account/create/ -u ons@ons.gov:password -d 'username=testuser@email.com&password=password&client_id=ons@ons.gov&client_secret=password&account_verified=true&new_username=testuser100@email.com'
+
+```
+
 
 
 Good Version of CURL for grant_type = password
