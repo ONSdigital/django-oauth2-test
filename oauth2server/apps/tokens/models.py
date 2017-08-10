@@ -70,7 +70,7 @@ class OAuthRefreshToken(ExpiresMixin):
     refresh_token = models.CharField(max_length=40, unique=True)
 
     def __unicode__(self):
-        return self.token
+        return self.refresh_token
 
     class Meta:
         #db_table = 'product_item'
@@ -96,7 +96,7 @@ class OAuthAccessToken(TokenCodeMixin, ExpiresMixin):
         return 'Bearer'
 
     def __unicode__(self):
-        return self.token
+        return self.access_token
 
     lifetime_setting = 'ACCESS_TOKEN_LIFETIME'
     default_lifetime = 3600

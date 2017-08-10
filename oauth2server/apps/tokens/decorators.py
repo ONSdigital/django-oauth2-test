@@ -239,8 +239,14 @@ def validate_request(func):
         if 'HTTP_AUTHORIZATION' in request.META:
             stdlogger.debug("*** We have a HTTP_AUTHORIZATION request ***")
             auth_header = request.META['HTTP_AUTHORIZATION']
-            auth_method, auth = re.split(':|;|,| ', auth_header)
+
+            try:
+                auth_method, auth = re.split(':|;|,| ', auth_header)
             #auth_method, auth = request.META['HTTP_AUTHORIZATION'].split(':')
+            except ValueError as http_auth_header_error:
+                stdlogger.warning("http auth header looks corrupt: {}".format(auth_header))
+                raise InvalidClientCredentialsException()
+
             if auth_method.lower() == 'basic':
                 client_id, client_secret = base64.b64decode(auth).split(':')
 
