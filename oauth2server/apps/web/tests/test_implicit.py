@@ -39,7 +39,11 @@ class ImplicitTest(TestCase):
         self.assertEqual(OAuthAuthorizationCode.objects.count(), 0)
 
         access_token = OAuthAccessToken.objects.last()
-        self.assertEqual(access_token.scope, 'foo bar qux')
+        self.assertIn('qux', access_token.scope)
+        self.assertIn('foo', access_token.scope)
+        self.assertIn('bar', access_token.scope)
+
+        #self.assertEqual(access_token.scope, 'foo bar qux')
 
         self.assertRedirects(
             response,

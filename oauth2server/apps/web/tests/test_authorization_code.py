@@ -119,7 +119,11 @@ class AuthorizationCodeTest(TestCase):
 
         auth_code = OAuthAuthorizationCode.objects.last()
         self.assertEqual(auth_code.redirect_uri, 'http://www.example.com')
-        self.assertEqual(auth_code.scope, 'foo bar qux')
+        self.assertIn('qux', auth_code.scope)
+        self.assertIn('foo', auth_code.scope)
+        self.assertIn('bar', auth_code.scope)
+
+        #self.assertEqual(auth_code.scope, 'foo bar qux')
 
         self.assertRedirects(
             response,
@@ -138,7 +142,7 @@ class AuthorizationCodeTest(TestCase):
                 'grant_type': 'authorization_code',
                 'code': auth_code.code,
             },
-            HTTP_AUTHORIZATION='Basic: {}'.format(
+            HTTP_AUTHORIZATION='Basic:{}'.format(
                 base64.encodestring('testclient:testpassword')),
         )
 
@@ -150,7 +154,10 @@ class AuthorizationCodeTest(TestCase):
         self.assertEqual(response.data['access_token'], access_token.access_token)
         self.assertEqual(response.data['expires_in'], 3600)
         self.assertEqual(response.data['token_type'], 'Bearer')
-        self.assertEqual(response.data['scope'], 'foo bar qux')
+        self.assertIn('qux', response.data['scope'])
+        self.assertIn('foo', response.data['scope'])
+        self.assertIn('bar', response.data['scope'])
+        #self.assertEqual(response.data['scope'], 'foo bar qux')
         self.assertEqual(response.data['refresh_token'], refresh_token.refresh_token)
 
         # Auth code should be deleted once access token is returned
@@ -175,7 +182,11 @@ class AuthorizationCodeTest(TestCase):
 
         auth_code = OAuthAuthorizationCode.objects.last()
         self.assertEqual(auth_code.redirect_uri, 'http://www.example.com')
-        self.assertEqual(auth_code.scope, 'foo bar qux')
+        self.assertIn('qux', auth_code.scope)
+        self.assertIn('foo', auth_code.scope)
+        self.assertIn('bar', auth_code.scope)
+
+        #self.assertEqual(auth_code.scope, 'foo bar qux')
 
         self.assertRedirects(
             response,
@@ -197,7 +208,7 @@ class AuthorizationCodeTest(TestCase):
                 'grant_type': 'authorization_code',
                 'code': auth_code.code,
             },
-            HTTP_AUTHORIZATION='Basic: {}'.format(
+            HTTP_AUTHORIZATION='Basic:{}'.format(
                 base64.encodestring('testclient:testpassword')),
         )
 
@@ -205,9 +216,9 @@ class AuthorizationCodeTest(TestCase):
         self.assertEqual(OAuthRefreshToken.objects.count(), 0)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data['error'], u'access_denied')
-        self.assertEqual(response.data['error_description'],
-                         u'Authorization code has expired')
+        self.assertEqual(response.data['detail'], u'Authorization code has expired')
+        #self.assertEqual(response.data['error_description'],
+        #                 u'Authorization code has expired')
 
         # Expired auth code should be deleted
         self.assertEqual(OAuthAuthorizationCode.objects.count(), 0)

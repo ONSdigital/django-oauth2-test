@@ -121,6 +121,13 @@ class DuplicateUserException(APIException):
     default_code = u'duplicate_user'
     default_detail = _(u'Duplicate user credentials')
 
+class UnknownUserException(APIException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    default_error = u'unknown_user'
+    default_code = u'unknown_user'
+    default_detail = _(u'Unknown user credentials. This user does not exist on the OAuth2 server')
+
+
 
 class DatabaseFailureException(APIException):
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR

@@ -38,9 +38,9 @@ class UserCredentialsTest(TestCase):
         self.assertEqual(OAuthRefreshToken.objects.count(), 0)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual(response.data['error'], u'invalid_client')
-        self.assertEqual(response.data['error_description'],
-                         u'Client credentials were not found in the headers or body')
+        self.assertEqual(response.data['detail'], u'Client credentials were not found in the headers or body')
+        #self.assertEqual(response.data['error_description'], u'Client credentials were not found in the headers or body')
+
 
     def test_invalid_client_credentials(self):
         self.assertEqual(OAuthAccessToken.objects.count(), 0)
@@ -53,7 +53,7 @@ class UserCredentialsTest(TestCase):
                 'username': 'john@doe.com',
                 'password': 'testpassword',
             },
-            HTTP_AUTHORIZATION='Basic: {}'.format(
+            HTTP_AUTHORIZATION='Basic:{}'.format(
                 base64.encodestring('bogus:bogus')),
         )
 
@@ -61,9 +61,31 @@ class UserCredentialsTest(TestCase):
         self.assertEqual(OAuthRefreshToken.objects.count(), 0)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual(response.data['error'], u'invalid_client')
-        self.assertEqual(response.data['error_description'],
-                         u'Invalid client credentials')
+        self.assertEqual(response.data['detail'], u'Invalid client credentials')
+        #self.assertEqual(response.data['error_description'], u'Invalid client credentials')
+
+
+    def test_corrupt_client_credentials(self):
+        self.assertEqual(OAuthAccessToken.objects.count(), 0)
+        self.assertEqual(OAuthRefreshToken.objects.count(), 0)
+
+        response = self.api_client.post(
+            path='/api/v1/tokens/',
+            data={
+                'grant_type': 'password',
+                'username': 'john@doe.com',
+                'password': 'testpassword',
+            },
+            HTTP_AUTHORIZATION='Basic: ,;{}'.format(
+                base64.encodestring('bogus:bogus;wrong')),
+        )
+
+        self.assertEqual(OAuthAccessToken.objects.count(), 0)
+        self.assertEqual(OAuthRefreshToken.objects.count(), 0)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.data['detail'], u'Invalid client credentials')
+        #self.assertEqual(response.data['error_description'], u'Invalid client credentials')
 
     def test_success(self):
         self.assertEqual(OAuthAccessToken.objects.count(), 0)
@@ -76,7 +98,7 @@ class UserCredentialsTest(TestCase):
                 'username': 'john@doe.com',
                 'password': 'testpassword',
             },
-            HTTP_AUTHORIZATION='Basic: {}'.format(
+            HTTP_AUTHORIZATION='Basic:{}'.format(
                 base64.encodestring('testclient:testpassword')),
         )
 
@@ -94,5 +116,8 @@ class UserCredentialsTest(TestCase):
         self.assertEqual(response.data['access_token'], access_token.access_token)
         self.assertEqual(response.data['expires_in'], 3600)
         self.assertEqual(response.data['token_type'], 'Bearer')
-        self.assertEqual(response.data['scope'], 'foo bar qux')
+        #self.assertEqual(response.data['scope'], 'foo bar qux')
+        self.assertIn('qux', response.data['scope'])
+        self.assertIn('foo', response.data['scope'])
+        self.assertIn('bar', response.data['scope'])
         self.assertEqual(response.data['refresh_token'], refresh_token.refresh_token)
