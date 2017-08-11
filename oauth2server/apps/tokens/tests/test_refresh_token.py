@@ -120,7 +120,7 @@ class RefreshTokenTest(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        user_access_token = OAuthAccessToken.objects.last()
+        user_access_token = OAuthAccessToken.objects.get(access_token= response.data['access_token'])
 
         response = self.api_client.post(
             path='/api/v1/tokens/',
@@ -133,7 +133,7 @@ class RefreshTokenTest(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        refreshed_access_token = OAuthAccessToken.objects.last()
+        refreshed_access_token = OAuthAccessToken.objects.get(access_token = response.data['access_token'])
         print "********** Refresh access token is: {}".format(refreshed_access_token)
         print "********** Refresh access token (access token) is: {}".format(refreshed_access_token.access_token)
         print "********** Refresh access token (refresh token) is: {}".format(refreshed_access_token.refresh_token)
@@ -142,6 +142,6 @@ class RefreshTokenTest(TestCase):
         print "********** Refresh access token (user) is: {}".format(refreshed_access_token.user)
         print "********** Refresh access token (user email) is: {}".format(refreshed_access_token.user.email)
 
-        self.assertEqual(refreshed_access_token.access_token, user_access_token.access_token)
+        self.assertNotEqual(refreshed_access_token.access_token, user_access_token.access_token)
         self.assertEqual(refreshed_access_token.client.client_id, 'testclient')
         self.assertEqual(refreshed_access_token.user.email, 'john@doe.com')
