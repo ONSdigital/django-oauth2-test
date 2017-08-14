@@ -2,6 +2,7 @@ appdirs==1.4.3
 asn1crypto==0.22.0
 bcrypt==2.0.0
 cffi==1.9.1
+cfenv==0.5.3
 cryptography==1.8.1
 Django==1.9.5
 djangorestframework==3.3.2

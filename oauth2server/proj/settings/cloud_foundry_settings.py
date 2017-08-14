@@ -6,6 +6,7 @@ __author__ = 'nherriot'
 # Parameters used to make this settings file active are: DJANGO_SETTINGS_MODULE: proj.settings.cloud_foundry_settings.
 
 import json
+import cfenv
 
 from proj.settings.default import *
 
@@ -58,26 +59,38 @@ DB_NAME = ''
 DB_USERNAME = ''
 DB_PASSWORD = ''
 
+
+
+#port = database.credentials['port']
+
+
 if 'VCAP_SERVICES' in os.environ:
     remote_logger.info('VCAP_SERVICES found in environment')
     vcap_config = json.loads(os.environ['VCAP_SERVICES'])
 
-    for key, values in vcap_config.items():
-        remote_logger.info('Inspecting key: "' + str(key) + '" with value: ' + str(values))
-        if key == 'rds':
-            for value in values:
-                credentials = value.get('credentials', {})
-                DB_HOST = credentials.get('host','')
-                DB_NAME = credentials.get('db_name', '')
-                DB_USERNAME = credentials.get('username', '')
-                DB_PASSWORD = credentials.get('password', '')
-                remote_logger.info('Postgres DATABASE found ')
-        else:
-            DB_HOST = 'host'
-            DB_NAME = 'dbname'
-            DB_USERNAME = 'user'
-            DB_PASSWORD = 'password'
-            remote_logger.error('VCAP_SERVICES defined but no URI credential found. Not using a DB engine')
+    cf_env = cfenv.AppEnv()
+    database = cf_env.get_service(tags='database')
+    DB_HOST = database.credentials.get('host', '')
+    DB_NAME = database.credentials.get('db_name', '')
+    DB_USERNAME = database.credentials.get('username', '')
+    DB_PASSWORD = database.credentials.get('password', '')
+
+    # for key, values in vcap_config.items():
+    #     remote_logger.info('Inspecting key: "' + str(key) + '" with value: ' + str(values))
+    #     if key == 'rds':
+    #         for value in values:
+    #             credentials = value.get('credentials', {})
+    #             DB_HOST = credentials.get('host','')
+    #             DB_NAME = credentials.get('db_name', '')
+    #             DB_USERNAME = credentials.get('username', '')
+    #             DB_PASSWORD = credentials.get('password', '')
+    #             remote_logger.info('Postgres DATABASE found ')
+    #     else:
+    #         DB_HOST = 'host'
+    #         DB_NAME = 'dbname'
+    #         DB_USERNAME = 'user'
+    #         DB_PASSWORD = 'password'
+    #         remote_logger.error('VCAP_SERVICES defined but no URI credential found. Not using a DB engine')
 else:
     DB_HOST = 'host'
     DB_NAME = 'dbname'
