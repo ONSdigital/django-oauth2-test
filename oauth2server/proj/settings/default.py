@@ -1,5 +1,7 @@
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from json import loads
+from sh import git
 import logging                                                      # Python logging package
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -14,8 +16,10 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'apps.analytics',
     'apps.accounts',
     'apps.credentials',
+    'apps.information',
     'apps.tokens',
     'apps.web',
 )
@@ -30,6 +34,40 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# This specifies what version and application name is displayed  in the info endpoint. (i.e. http://localhost:8008/info)
+# It also tries to detect the git_info file that is injected by jenkins in cloud foundry. If it's not there is uses
+# values from the local system.
+
+APPLICATION_NAME = 'oauth2 server'
+APPLICATION_VERSION = '0.1.0'
+
+# A global dictionary used to display info on the /info endpoint
+MICRO_SERVICE_INFO = {
+    "branch": "",
+    "built": "N/A",
+    "commit": "",
+    "name": APPLICATION_NAME,
+    "origin": "",
+    "version": APPLICATION_VERSION
+}
+
+# if we can detect the git_info file then pull values from the file. Otherwise load values from the system we are
+# currently running on.
+if os.path.isfile('git_info2'):
+    with open('git_info') as micro_service_info_file:
+        micro_service_info_dictionary = loads(micro_service_info_file.read())
+        MICRO_SERVICE_INFO['branch'] = micro_service_info_dictionary['branch']
+        MICRO_SERVICE_INFO['built'] = micro_service_info_dictionary['built']
+        MICRO_SERVICE_INFO['commit'] = micro_service_info_dictionary['commit']
+        MICRO_SERVICE_INFO['origin'] = micro_service_info_dictionary['origin']
+else:
+    MICRO_SERVICE_INFO['branch'] = str(git('rev-parse', '--abbrev-ref', 'HEAD')).strip('\n')
+    MICRO_SERVICE_INFO['commit'] = str(git('rev-parse', 'HEAD')).strip('\n')
+    MICRO_SERVICE_INFO['origin'] = str(git('config', '--get', 'remote.origin.url')).strip('\n')
+
+
+
 
 
 TIME_ZONE = 'UTC'
