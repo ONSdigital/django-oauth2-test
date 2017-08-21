@@ -23,6 +23,14 @@ class UserAccountLockedException(APIException):
     default_detail = _(u'User account locked')
 
 
+class UserAccountNotVerified(APIException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    default_error = u'account_not_verified'
+    default_detail = _(u'User account not verified')
+
+
+
+
 class InvalidUserCredentialsException(APIException):
     status_code = status.HTTP_401_UNAUTHORIZED
     default_error = u'unauthorized_user'

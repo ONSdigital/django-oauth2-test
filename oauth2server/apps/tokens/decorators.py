@@ -31,6 +31,7 @@ from proj.exceptions import (
     ClientCredentialsRequiredException,
     InvalidClientCredentialsException,
     UserAccountLockedException,
+    UserAccountNotVerified,
     InvalidUserCredentialsException,
     AuthorizationCodeNotFoundException,
     RefreshTokenNotFoundException,
@@ -195,6 +196,10 @@ def validate_request(func):
             except OAuthUser.DoesNotExist:
                 stdlogger.warning( "Raised InvalidUserCredentialsException")
                 raise InvalidUserCredentialsException()
+
+            if not user.account_is_verified:
+                stdlogger.warning("Raised UserAccountNotVerified")
+                raise UserAccountNotVerified
 
             if user.account_locked():
                 stdlogger.warning( "Raised UserAccountLockedException")
