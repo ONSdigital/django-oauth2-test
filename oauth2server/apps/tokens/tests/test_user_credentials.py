@@ -87,6 +87,31 @@ class UserCredentialsTest(TestCase):
         self.assertEqual(response.data['detail'], u'Invalid client credentials')
         #self.assertEqual(response.data['error_description'], u'Invalid client credentials')
 
+
+    # This uses the john2@doe.com account to test a user who has not had his account verified.
+    def test_account_not_verifieds(self):
+        self.assertEqual(OAuthAccessToken.objects.count(), 0)
+        self.assertEqual(OAuthRefreshToken.objects.count(), 0)
+
+        response = self.api_client.post(
+            path='/api/v1/tokens/',
+            data={
+                'grant_type': 'password',
+                'username': 'john2@doe.com',
+                'password': 'testpassword',
+            },
+            HTTP_AUTHORIZATION='Basic:{}'.format(
+                base64.encodestring('testclient:testpassword')),
+        )
+
+        self.assertEqual(OAuthAccessToken.objects.count(), 0)
+        self.assertEqual(OAuthRefreshToken.objects.count(), 0)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.data['detail'], u'User account not verified')
+        #print "****** response value is: {} *******".format(response.data)
+
+
     def test_success(self):
         self.assertEqual(OAuthAccessToken.objects.count(), 0)
         self.assertEqual(OAuthRefreshToken.objects.count(), 0)
