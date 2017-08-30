@@ -199,10 +199,10 @@ def validate_request(func):
 
             if not user.account_is_verified:
                 stdlogger.warning("Raised UserAccountNotVerified")
-                raise UserAccountNotVerified
+                raise UserAccountNotVerified()
 
             if user.account_locked():
-                stdlogger.warning( "Raised UserAccountLockedException")
+                stdlogger.warning("Raised UserAccountLockedException")
                 raise UserAccountLockedException()
 
             if not user.verify_password(password):

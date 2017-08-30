@@ -109,7 +109,6 @@ class UserCredentialsTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response.data['detail'], u'User account not verified')
-        #print "****** response value is: {} *******".format(response.data)
 
 
     # This uses the john3@doe.com account to test a user who has a verified account but is locked.
@@ -133,7 +132,7 @@ class UserCredentialsTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response.data['detail'], u'User account locked')
-        #print "****** response value is: {} *******".format(response.data)
+
 
 
 
@@ -161,7 +160,7 @@ class UserCredentialsTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response.data['detail'], u'User account locked')
-        #print "****** response value is: {} *******".format(response.data)
+
 
         # Now use the correct password. This should still fail with user account locked.
         response = self.api_client.post(
@@ -180,7 +179,7 @@ class UserCredentialsTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response.data['detail'], u'User account locked')
-        #print "****** response value is: {} *******".format(response.data)
+
 
 
     def test_success(self):
