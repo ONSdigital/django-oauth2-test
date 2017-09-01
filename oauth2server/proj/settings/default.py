@@ -41,7 +41,7 @@ MIDDLEWARE_CLASSES = [
 # values from the local system.
 
 APPLICATION_NAME = 'oauth2 server'
-APPLICATION_VERSION = '0.1.1'
+APPLICATION_VERSION = '0.1.2'
 
 # A global dictionary used to display info on the /info endpoint
 MICRO_SERVICE_INFO = {
