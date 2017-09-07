@@ -1,5 +1,5 @@
 import os
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'proj.settings.cloud_foundry_settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'proj.settings.local')
 application = get_wsgi_application()
