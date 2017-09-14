@@ -2,14 +2,13 @@
 import os
 from json import loads
 from sh import git
-import logging                                                      # Python logging package
+import logging
 
 stdlogger = logging.getLogger(__name__)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 # Application definition
-
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,7 +38,6 @@ MIDDLEWARE_CLASSES = [
 # This specifies what version and application name is displayed  in the info endpoint. (i.e. http://localhost:8008/info)
 # It also tries to detect the git_info file that is injected by jenkins in cloud foundry. If it's not there is uses
 # values from the local system.
-
 APPLICATION_NAME = 'oauth2 server'
 APPLICATION_VERSION = '0.1.2'
 
@@ -68,9 +66,6 @@ else:
     MICRO_SERVICE_INFO['branch'] = str(git('rev-parse', '--abbrev-ref', 'HEAD')).strip('\n')
     MICRO_SERVICE_INFO['commit'] = str(git('rev-parse', 'HEAD')).strip('\n')
     MICRO_SERVICE_INFO['origin'] = str(git('config', '--get', 'remote.origin.url')).strip('\n')
-
-
-
 
 
 TIME_ZONE = 'UTC'
@@ -147,13 +142,16 @@ LOGGING = {
     },
     'formatters': {
         'simple': {
-            'format': '[%(asctime)s] %(levelname)s %(message)s','datefmt': '%Y-%m-%d %H:%M:%S'
+            'format': '[%(asctime)s] %(levelname)s %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
         },
         'verbose': {
-            'format': '[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s','datefmt': '%Y-%m-%d %H:%M:%S'
+            'format': '[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
         },
         'ons': {
-            'format': ' {"created":"%(asctime)s", "service":"oauth2", "level": "%(levelname)s", "event":"%(message)s", "context": "%(name)s.%(funcName)s:%(lineno)d"  }','datefmt': '%Y-%m-%d %H:%M:%S '
+            'format': ' {"created":"%(asctime)s", "service":"oauth2", "level": "%(levelname)s", "event":"%(message)s", "context": "%(name)s.%(funcName)s:%(lineno)d"  }',
+            'datefmt': '%Y-%m-%d %H:%M:%S '
         },
 
     },

@@ -2,6 +2,12 @@ __author__ = 'nherriot'
 
 from proj.settings.default import *
 
+
+# Standard instance of a logger with __name__. We are using this so that our root folder has our logger defined.
+stdlogger = logging.getLogger(__name__)
+stdlogger.info("*** Local settings are being used. ***")
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'this-needs-to-change'           #TODO inject this variable on production
 
@@ -44,10 +50,3 @@ OAUTH2_SERVER = {
 
 # This defined the max number of failed logins a user can have before the account is locked
 MAX_FAILED_LOGINS = 10
-
-
-
-# Standard instance of a logger with __name__. We are using this so that our root folder has our logger defined.
-stdlogger = logging.getLogger(__name__)
-stdlogger.info("*** Local settings are being used. ***")
-
