@@ -1,1 +1,1 @@
-root: staticfiles
+root: oauth2server/staticfiles
