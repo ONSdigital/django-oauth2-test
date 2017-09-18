@@ -90,7 +90,7 @@ class UserCredentialsTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response.data['detail'], u'Unauthorized user credentials!!!')
 
-    # This uses the jogn@doe.com user with the wrong password
+    # This uses the john@doe.com user with the wrong password
     def test_account_wrong_password(self):
         response = self.api_client.post(
             path='/api/v1/tokens/',
