@@ -40,6 +40,8 @@ framework at ONS.
 Basic Starting Procedure on Local Machine
 -----------------------------------------
 
+* Currently this service will not work with python 3, use python 2.7.0 instead
+
 * Migrate Tables. You need to have your settings setup to a valid DB which are in /prot/settings/default.py
 ```
     /> python manage.py migrate
