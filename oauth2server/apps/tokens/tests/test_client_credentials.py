@@ -33,7 +33,6 @@ class ClientCredentialsTest(TestCase):
         self.assertEqual(OAuthRefreshToken.objects.count(), 0)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        #print "********** response data is: {} ************".format(response.data)
         self.assertEqual(response.data['detail'], u'The grant type was not specified in the request')
 
     def test_invalid_grant_type(self):
@@ -80,7 +79,6 @@ class ClientCredentialsTest(TestCase):
         self.assertEqual(OAuthRefreshToken.objects.count(), 0)
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        print "************ Response data is: {} **************".format(response.data)
         #self.assertEqual(response.data['error'], u'invalid_client')
         self.assertEqual(response.data['detail'], u'Invalid client credentials')
         #self.assertEqual(response.data['detail'], u'Invalid client credentials')
