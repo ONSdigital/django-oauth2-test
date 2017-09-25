@@ -67,10 +67,10 @@ if 'VCAP_SERVICES' in os.environ:
 
     cf_env = cfenv.AppEnv()
     credentials = cf_env.services[0].credentials
-    DB_HOST = credentials.get('host', '')
-    DB_NAME = credentials.get('db_name', '')
-    DB_USERNAME = credentials.get('username', '')
-    DB_PASSWORD = credentials.get('password', '')
+    DB_HOST = credentials.get('host')
+    DB_NAME = credentials.get('db_name')
+    DB_USERNAME = credentials.get('username')
+    DB_PASSWORD = credentials.get('password')
 
 else:
     DB_HOST = 'host'

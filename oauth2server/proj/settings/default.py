@@ -40,7 +40,7 @@ MIDDLEWARE_CLASSES = [
 # It also tries to detect the git_info file that is injected by jenkins in cloud foundry. If it's not there is uses
 # values from the local system.
 APPLICATION_NAME = 'oauth2 server'
-APPLICATION_VERSION = '0.1.2'
+APPLICATION_VERSION = '0.1.3'
 
 # A global dictionary used to display info on the /info endpoint
 MICRO_SERVICE_INFO = {
