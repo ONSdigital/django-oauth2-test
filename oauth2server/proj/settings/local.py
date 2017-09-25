@@ -32,7 +32,7 @@ DATABASES = {
         'PASSWORD': 'postgres',                            # Not used for developing
         'HOST': 'localhost',                                # Set to using the postgres SQL DB within our docker container. See docker-compose.yml
                                                             # for information on this within the ras-compose project on Github for ONSDigital
-        'PORT': '5432',                                     # Set to the exposed endpoint via our docker-compose file. Normally it's 5432 for postgres
+        'PORT': '5431',                                     # Set to the exposed endpoint via our docker-compose file. Normally it's 5432 for postgres
     }
 }
 
