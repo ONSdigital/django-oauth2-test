@@ -191,19 +191,12 @@ def validate_request(func):
         if grant_type == 'password':
 
             stdlogger.debug("Grant_type password. Second function")
+
             try:
                 user = OAuthUser.objects.get(email=username)
             except OAuthUser.DoesNotExist:
                 stdlogger.warning( "Raised InvalidUserCredentialsException")
                 raise InvalidUserCredentialsException()
-
-            if not user.account_is_verified:
-                stdlogger.warning("Raised UserAccountNotVerified")
-                raise UserAccountNotVerified()
-
-            if user.account_locked():
-                stdlogger.warning("Raised UserAccountLockedException")
-                raise UserAccountLockedException()
 
             if not user.verify_password(password):
                 stdlogger.debug("I've raised InvalidUserCredentialsException - password failed the check!")
@@ -214,6 +207,14 @@ def validate_request(func):
                     user.save()
                     raise UserAccountLockedException()
                 raise InvalidUserCredentialsException()
+
+            if not user.account_is_verified:
+                stdlogger.warning("Raised UserAccountNotVerified")
+                raise UserAccountNotVerified()
+
+            if user.account_locked():
+                stdlogger.warning("Raised UserAccountLockedException")
+                raise UserAccountLockedException()
 
             user.reset_failed_logins()
             user.unlock_account()
