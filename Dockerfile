@@ -1,9 +1,7 @@
 FROM python:2.7.13
-MAINTAINER David Carboni
 
 WORKDIR /oauth2server
-ADD oauth2server ./oauth2server
-ADD requirements.txt ./
+COPY . /oauth2server
 
 RUN pip install -r requirements.txt
 RUN python oauth2server/manage.py migrate
