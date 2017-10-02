@@ -27,7 +27,6 @@ class UserAdministrationTest(TestCase):
                 base64.encodestring('testclient:testpassword')),
         )
 
-        # Expected response should be like: {"account":"john@doe.com","updated":"success"}
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response.data['detail'], u'User account locked')
 
