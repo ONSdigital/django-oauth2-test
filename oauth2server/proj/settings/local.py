@@ -11,19 +11,6 @@ stdlogger.info("*** Local settings are being used. ***")
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'this-needs-to-change'           #TODO inject this variable on production
 
-# Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-# DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db',
-#        'NAME': 'rich_test_db',
-#        'USER': 'weekr',
-#        'PASSWORD': '',
-#        'HOST': 'localhost',
-#    },
-# }
-
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
