@@ -15,11 +15,11 @@ SECRET_KEY = 'this-needs-to-change'           #TODO inject this variable on prod
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 # DATABASES = {
 #    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': 'django_oauth2_server',
-#        'USER': '',
+#        'ENGINE': 'django.db',
+#        'NAME': 'rich_test_db',
+#        'USER': 'weekr',
 #        'PASSWORD': '',
-#        'HOST': '',
+#        'HOST': 'localhost',
 #    },
 # }
 
@@ -29,7 +29,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'postgres',                                 # Or path to database file if using sqlite3.
         'USER': 'postgres',                                 # Not used with sqlite3.
-        'PASSWORD': 'postgres',                            # Not used for developing
+        'PASSWORD': 'password',                            # Not used for developing
         'HOST': 'localhost',                                # Set to using the postgres SQL DB within our docker container. See docker-compose.yml
                                                             # for information on this within the ras-compose project on Github for ONSDigital
         'PORT': '5431',                                     # Set to the exposed endpoint via our docker-compose file. Normally it's 5432 for postgres
