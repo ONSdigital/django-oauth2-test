@@ -39,8 +39,8 @@ MIDDLEWARE_CLASSES = [
 # This specifies what version and application name is displayed  in the info endpoint. (i.e. http://localhost:8008/info)
 # It also tries to detect the git_info file that is injected by jenkins in cloud foundry. If it's not there is uses
 # values from the local system.
-APPLICATION_NAME = 'oauth2 server'
-APPLICATION_VERSION = '0.1.3'
+APPLICATION_NAME = 'ras-django'
+APPLICATION_VERSION = '1.0.0'
 
 # A global dictionary used to display info on the /info endpoint
 MICRO_SERVICE_INFO = {
