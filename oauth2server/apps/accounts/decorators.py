@@ -156,6 +156,9 @@ def validate_request(func):
                 username = request.POST['username']
                 validate_email(username)
                 user = OAuthUser.objects.get(email=username)
+                if user.account_is_locked:
+                    stdlogger.warning("A user trying to update their account has it in a locked state")
+                    raise UserAccountLockedException
             except KeyError:
                 stdlogger.warning("Username is missing from the PUT method")
                 raise UsernameRequiredException()
