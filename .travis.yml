@@ -19,6 +19,6 @@ before_script:
   - cp oauth2server/proj/settings/local.example.py oauth2server/proj/settings/local.py
   - cd oauth2server
   - python manage.py migrate
-  - python ./oauth2server/manage.py collectstatic --noinput;
+  - python manage.py collectstatic --noinput;
 script:
   - python manage.py test
