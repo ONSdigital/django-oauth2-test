@@ -1,5 +1,3 @@
-__author__ = 'nherriot'
-
 from proj.settings.default import *
 
 
@@ -9,20 +7,7 @@ stdlogger.info("*** Local settings are being used. ***")
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'this-needs-to-change'           #TODO inject this variable on production
-
-# Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-# DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': 'django_oauth2_server',
-#        'USER': '',
-#        'PASSWORD': '',
-#        'HOST': '',
-#    },
-# }
-
+SECRET_KEY = 'change-me'
 
 DATABASES = {
     'default': {
@@ -32,7 +17,7 @@ DATABASES = {
         'PASSWORD': 'postgres',                            # Not used for developing
         'HOST': 'ras-postgres',                                # Set to using the postgres SQL DB within our docker container. See docker-compose.yml
                                                             # for information on this within the ras-compose project on Github for ONSDigital
-        'PORT': '5432',                                     # Set to the exposed endpoint via our docker-compose file
+        'PORT': '5431',                                     # Set to the exposed endpoint via our docker-compose file
     }
 }
 

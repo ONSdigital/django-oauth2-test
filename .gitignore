@@ -1,4 +1,5 @@
 .venv/
+staticfiles/
 *.pyc
 *.sqlite
 .idea/

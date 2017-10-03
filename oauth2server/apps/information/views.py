@@ -17,4 +17,4 @@ class InformationView(APIView):
         #TODO The get should be supplied to provide introspection for admin functions
         stdlogger.debug(" Hitting HTTP GET analytics view. Application name set as: {}. Application version is set as: {}".format(settings.APPLICATION_NAME, settings.APPLICATION_VERSION))
 
-        return Response(data=settings.MICRO_SERVICE_INFO, status=status.HTTP_201_CREATED,)
+        return Response(data=settings.MICRO_SERVICE_INFO, status=status.HTTP_200_OK,)

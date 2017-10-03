@@ -7,7 +7,7 @@ build () {
 
 start() {
  # start the oauth server connecting to the external network
- docker run --network=rasdockerdev_default -d --name=oauth2-service oauth2-service
+ docker run -p 8040:8040 --network=rasdockerdev_default -d --name=oauth2-service oauth2-service
 }
 
 stop () {

@@ -14,7 +14,7 @@ class InformationViewTest(TestCase):
     def test_info_endpoint_ok(self):
 
         response = self.api_client.get(path='/info/',)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['branch'], settings.MICRO_SERVICE_INFO['branch'])
         self.assertEqual(response.data['commit'], settings.MICRO_SERVICE_INFO['commit'])
         self.assertEqual(response.data['origin'], settings.MICRO_SERVICE_INFO['origin'])
