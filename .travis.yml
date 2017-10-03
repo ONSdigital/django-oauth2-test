@@ -10,8 +10,6 @@ branches:
 cache:
   directories:
     - ~/virtualenv/python2.7/
-env:
-    - SECRET_KEY='this-needs-to-change'
 install:
   - pip install -r requirements.txt
   - pip install -r requirements-for-tests.txt
