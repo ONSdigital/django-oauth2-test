@@ -10,10 +10,8 @@ Implementation of OAuth2 Server for Django. Feel free to fork this repository an
 This code is taken from a git clone of: https://github.com/RichardKnop/django-oauth2-server/blob/master/README.md#scope
 
 
-
-Written for Django 1.9 :)
-* [Changes For Ras-OAuth2-Server](#Changes-For-Ras-OAuth2-Server)
-    * [Basic Starting on Localhost](#Basic-Starting-Procedure-on-Local-Machine)
+Written for Django 1.9 Python 2.7 :)
+* [Quick Start on localhost](#Quick-Start-on-localhost)
     * [Data fill Default Test Data](#Setup-Default-Data-for-ONS)
     * [Admin API](#Admin-API)
 * [Grant Types](#grant-types)
@@ -30,60 +28,51 @@ Written for Django 1.9 :)
     * [Running Tests](#running-tests)
 
 
-
-Changes For Ras-OAuth2-Server
-=============================
-
-This documents changes implemented for the Ras-OAuth2-Server that allow this solution to be used with the microservice
-framework at ONS.
-
-Basic Starting Procedure on Local Machine
------------------------------------------
-
-* Currently this service will not work with python 3, use python 2.7.0 instead
-
-* Migrate Tables. You need to have your settings setup to a valid DB which are in /prot/settings/default.py
+Quick Start on localhost
+========================
+* Point at local database as defined in DATABASES in the following script
 ```
-    /> python manage.py migrate
+    ./oauth2server/proj/settings/local.py
+```
+* Migrate the model's tables into the above database
+```
+    python ./oauth2server/manage.py migrate
 ```
 
-* Add default data using Django fixtures. See next section for details.
+* Add the default oauth2 client credentials and HTTP basic auth credentials
 ```
-    /> python manage.py loaddata apps/credentials/fixtures/ons_credentials.json
-```
-
-* Create your super user for the Django server. Note this is done automatically on Cloud Foundry
-```
-    /> python manage.py createsuperuser
+    python ./oauth2server/manage.py loaddata ons_credentials
 ```
 
-* Start the server on your dev default port
+* Create a Django super user
 ```
-    /> python manage.py runserver
-```
-
-Setup Default Data for ONS
---------------------------
-
-Above and beyond what we do for the original setup there is a django fixtures file that can be run to populate the
-database with 3 test client's and 1 test user. To run the fixture from the oauth2server directory do:
-
-```
-python manage.py loaddata apps/credentials/fixtures/ons_credentials.json
+    export OAUTH2_SUPER_USER=admin
+    export OAUTH2_SUPER_USER_PASSWORD=password
+    export OAUTH2_SUPER_USER_EMAIL=admin@email.com
+    bash ./init_db.sh
 ```
 
-This sets up 3 clients which are:
+* Index the web app's UI static files (css, js, jpeg etc)
+```
+    python ./oauth2server/manage.py collectstatic --noinput
+```
 
-* partyService@ons.gov.uk
-* frontstageService@ons.gov.uk
-* collectionInstrumentService@ons.gov.uk
+* Start the server on your dev default port with either;
 
-And one test user which is:
+- - the django development web server
+```
+    oauth2server/manage.py runserver 0.0.0.0:8040
+```
 
-* testuser@email.com
+- -  or the gunicorn web server
+```
+    gunicorn --bind 0.0.0.0:8040 --workers 4 proj.wsgi --pythonpath 'oauth2server'
+```
 
-All with password 'password'.
-
+* Navigate to the management UI for the running server (u: admin p: password)
+```
+    http://localhost:8040/admin/
+```
 
 Admin API
 ----------
