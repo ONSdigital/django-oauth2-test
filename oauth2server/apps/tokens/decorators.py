@@ -192,12 +192,11 @@ def validate_request(func):
 
             stdlogger.debug("Grant_type password. Second function")
 
-            try:
-                user = OAuthUser.objects.get(email=username)
-            except OAuthUser.DoesNotExist:
+            users = OAuthUser.objects.filter(email__iexact=username)
+            if not users.exists():
                 stdlogger.warning( "Raised InvalidUserCredentialsException")
                 raise InvalidUserCredentialsException()
-
+            user = users[0]
             if not user.verify_password(password):
                 stdlogger.debug("I've raised InvalidUserCredentialsException - password failed the check!")
                 user.increment_failed_logins()
