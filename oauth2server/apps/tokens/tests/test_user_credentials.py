@@ -189,6 +189,34 @@ class UserCredentialsTest(TestCase):
         locked_user = OAuthUser.objects.get(email='john4@doe.com')
         self.assertEqual(locked_user.account_locked(), True)
 
+    def test_should_login_with_different_case_email(self):
+        # Given
+        data = {
+            'grant_type': 'password',
+            'username': 'John@Doe.com',
+            'password': 'testpassword'
+        }
+
+        # When
+        response = self.api_client.post(
+            path='/api/v1/tokens/',
+            data=data,
+            HTTP_AUTHORIZATION='Basic:{}'.format(
+                base64.encodestring('testclient:testpassword')),
+        )
+
+        # Then
+        self.assertEqual(OAuthAccessToken.objects.count(), 1, 'Should have issued an access token')
+        self.assertEqual(OAuthRefreshToken.objects.count(), 1, 'Should have issued a refresh token')
+
+        access_token, refresh_token = OAuthAccessToken.objects.last(), OAuthRefreshToken.objects.last()
+
+        self.assertEqual(access_token.client.client_id, 'testclient')
+        self.assertEqual(access_token.user.email, 'john@doe.com')
+        self.assertEqual(access_token.refresh_token, refresh_token)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
     def test_success(self):
         response = self.api_client.post(
             path='/api/v1/tokens/',
