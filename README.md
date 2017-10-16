@@ -28,6 +28,18 @@ Written for Django 1.9 Python 2.7 :)
     * [Running Tests](#running-tests)
 
 
+Quick Start on docker
+========================
+```
+docker-compose up -d
+```
+
+This runs up the oauth2 server and a postgres database. Check the logs for the oauth2-service as it may require the restart of the oauth2-service
+```
+docker restart oauth2-service
+```
+This is due to race conditions in the start up of the database and migration of the database tables, these need to be handled at application level and are not controlled by docker compose.
+
 Quick Start on localhost
 ========================
 * Point at local database as defined in DATABASES in the following script
