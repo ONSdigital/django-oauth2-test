@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  ras-postgres:
+    container_name: ras-postgres
+    image: sdcplatform/postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  oauth2-service:
+    container_name: oauth2-service
+    build: ./
+    restart: always
+    depends_on:
+      - ras-postgres
+    ports:
+      - "8040:8040"
