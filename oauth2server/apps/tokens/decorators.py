@@ -134,6 +134,7 @@ def validate_request(func):
             'authorization_code',
             'password',
             'refresh_token',
+            'reset_password',
         )
         if grant_type not in valid_grant_types:
             stdlogger.warning( "Invalid grant type exception" )
@@ -168,6 +169,27 @@ def validate_request(func):
                     password = request.GET['password']
                 except KeyError:
                     raise PasswordRequiredException()
+
+        # reset password grant requires username parameter
+        if grant_type == 'reset_password':
+
+            stdlogger.debug("Grant_type reset_password")
+            try:
+                username = request.POST['username']
+            except KeyError:
+                raise UsernameRequiredException()
+
+            users = OAuthUser.objects.filter(email__iexact=username)
+            if not users.exists():
+                stdlogger.warning("Raised InvalidUserCredentialsException")
+                raise InvalidUserCredentialsException()
+            user = users[0]
+
+            if user.account_locked():
+                stdlogger.warning("Raised UserAccountLockedException")
+                raise UserAccountLockedException()
+
+            request.user = username
 
         # refresh_token grant requires refresh_token parameter
         if grant_type == 'refresh_token':

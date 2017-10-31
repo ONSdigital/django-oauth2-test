@@ -29,6 +29,11 @@ def factory(request):
             user=request.user,
             scopes=request.scopes)
 
+    if request.grant_type == 'reset_password':
+        return UserResetPasswordGrantType(
+            client=request.client,
+            user=request.user)
+
     if request.grant_type == 'refresh_token':
         return RefreshTokenGrantType(
             refresh_token=request.refresh_token)
@@ -71,6 +76,17 @@ class UserCredentialsGrantType(CreateTokenMixin):
         self.client = client
         self.user = user
         self.scopes = scopes
+
+    def grant(self):
+        return self.create_access_token(
+            client=self.client, user=self.user)
+
+
+class UserResetPasswordGrantType(CreateTokenMixin):
+
+    def __init__(self, client, user):
+        self.client = client
+        self.user = user
 
     def grant(self):
         return self.create_access_token(
