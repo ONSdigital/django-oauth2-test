@@ -189,7 +189,7 @@ def validate_request(func):
                 stdlogger.warning("Raised UserAccountLockedException")
                 raise UserAccountLockedException()
 
-            request.user = username
+            request.user = user
 
         # refresh_token grant requires refresh_token parameter
         if grant_type == 'refresh_token':
@@ -311,7 +311,7 @@ def validate_request(func):
         :param request:
         :return:
         """
-        if request.grant_type not in ('client_credentials', 'password'):
+        if request.grant_type not in ('client_credentials', 'password', 'reset_password'):
             return
 
         if settings.OAUTH2_SERVER['IGNORE_CLIENT_REQUESTED_SCOPE']:
