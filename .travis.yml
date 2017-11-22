@@ -1,20 +1,28 @@
 language: python
+
 python:
-  - "2.7"
+    - "2.7"
+
 env:
-  - DJANGO=1.9 DB=postgres
+    - DJANGO=1.9 DB=postgres
+
 cache:
-  directories:
-    - ~/virtualenv/python2.7/
+    - pip
+
 install:
-  - pip install -r requirements.txt
-  - pip install -r requirements-for-tests.txt
+    - pip install pipenv
+    - pipenv install --dev --deploy
+
 before_script:
-  - createuser --createdb django_oauth2_server
-  - createdb -U django_oauth2_server django_oauth2_server
-  - cp oauth2server/proj/settings/local.example.py oauth2server/proj/settings/local.py
-  - cd oauth2server
-  - python manage.py migrate
-  - python manage.py collectstatic --noinput;
+    - createuser --createdb django_oauth2_server
+    - createdb -U django_oauth2_server django_oauth2_server
+    - cp oauth2server/proj/settings/local.example.py oauth2server/proj/settings/local.py
+    - pipenv run oauth2server/manage.py migrate
+    - pipenv run oauth2server/manage.py collectstatic --noinput;
+
 script:
-  - python manage.py test
+    - pipenv run oauth2server/manage.py test
+
+branches:
+    only:
+        - master

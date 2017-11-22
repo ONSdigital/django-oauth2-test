@@ -42,18 +42,25 @@ This is due to race conditions in the start up of the database and migration of 
 
 Quick Start on localhost
 ========================
-* Point at local database as defined in DATABASES in the following script
+* Use pipenv to create a virtual environment. Note that this service runs on python version 2.7.10. You can manage python versions using [pyenv](https://github.com/pyenv/pyenv)
+```
+$ pip install pipenv
+$ pipenv install
+```
+
+* Edit the settings in the below file to point at a local PostgreSQL instance
 ```
     ./oauth2server/proj/settings/local.py
 ```
+
 * Migrate the model's tables into the above database
 ```
-    python ./oauth2server/manage.py migrate
+    pipenv run ./oauth2server/manage.py migrate
 ```
 
 * Add the default oauth2 client credentials and HTTP basic auth credentials
 ```
-    python ./oauth2server/manage.py loaddata ons_credentials
+    pipenv run ./oauth2server/manage.py loaddata ons_credentials
 ```
 
 * Create a Django super user
@@ -66,20 +73,20 @@ Quick Start on localhost
 
 * Index the web app's UI static files (css, js, jpeg etc)
 ```
-    python ./oauth2server/manage.py collectstatic --noinput
+    pipenv run ./oauth2server/manage.py collectstatic --noinput
 ```
 
 * Start the server on your dev default port with either;
 
-- - the django development web server
-```
-    oauth2server/manage.py runserver 0.0.0.0:8040
-```
+    * the django development web server
+    ```
+        pipenv run oauth2server/manage.py runserver 0.0.0.0:8040
+    ```
 
-- -  or the gunicorn web server
-```
-    gunicorn --bind 0.0.0.0:8040 --workers 4 proj.wsgi --pythonpath 'oauth2server'
-```
+    * or the gunicorn web server
+    ```
+        pipenv run gunicorn --bind 0.0.0.0:8040 --workers 4 proj.wsgi --pythonpath 'oauth2server'
+    ```
 
 * Navigate to the management UI for the running server (u: admin p: password)
 ```
@@ -237,8 +244,6 @@ command and run the system on default port 8080.
 The manifest file also sets the DJANGO_SETTINGS_MODULE to the cloud_foundry_settings.py file which pics up all the
 dynamic variables.
 
-*TODO - To productionize this the server has to be bound to a WSGI server. e.g. [NGINX]( https://www.nginx.com/resources/wiki/)
-
 
 
 Grant Types
@@ -252,14 +257,14 @@ http://tools.ietf.org/html/rfc6749#section-4.1
 Insert test data:
 
 ```
-$ python oauth2server/manage.py loaddata test_credentials
-$ python oauth2server/manage.py loaddata test_scopes
+$ pipenv run oauth2server/manage.py loaddata test_credentials
+$ pipenv run oauth2server/manage.py loaddata test_scopes
 ```
 
 Run the development web server:
 
 ```
-$ python oauth2server/manage.py runserver
+$ pipenv run oauth2server/manage.py runserver
 ```
 
 And you can now go to this page in your web browser:
@@ -309,14 +314,14 @@ Very similar to the authorization code but the token is returned in URL fragment
 Insert test data:
 
 ```
-$ python oauth2server/manage.py loaddata test_credentials
-$ python oauth2server/manage.py loaddata test_scopes
+$ pipenv run oauth2server/manage.py loaddata test_credentials
+$ pipenv run oauth2server/manage.py loaddata test_scopes
 ```
 
 Run the development web server:
 
 ```
-$ python oauth2server/manage.py runserver
+$ pipenv run oauth2server/manage.py runserver
 ```
 
 And you can now go to this page in your web browser:
@@ -343,14 +348,14 @@ http://tools.ietf.org/html/rfc6749#section-4.3
 Insert test data:
 
 ```
-$ python oauth2server/manage.py loaddata test_credentials
-$ python oauth2server/manage.py loaddata test_scopes
+$ pipenv run oauth2server/manage.py loaddata test_credentials
+$ pipenv run oauth2server/manage.py loaddata test_scopes
 ```
 
 Run the development web server:
 
 ```
-$ python oauth2server/manage.py runserver
+$ pipenv run oauth2server/manage.py runserver
 ```
 
 And you can now get a new access token:
@@ -380,14 +385,14 @@ http://tools.ietf.org/html/rfc6749#section-4.4
 Insert test data:
 
 ```
-$ python oauth2server/manage.py loaddata test_credentials
-$ python oauth2server/manage.py loaddata test_scopes
+$ pipenv run oauth2server/manage.py loaddata test_credentials
+$ pipenv run oauth2server/manage.py loaddata test_scopes
 ```
 
 Run the development web server:
 
 ```
-$ python oauth2server/manage.py runserver
+$ pipenv run oauth2server/manage.py runserver
 ```
 
 And you can now get token either using HTTP Basic Authentication:
@@ -477,12 +482,11 @@ Clone the repository:
 $ git clone https://github.com/RichardKnop/django-oauth2-server.git
 ```
 
-Create a virtual environment and install requirements:
+Use pipenv to create a virtual environment. Note that this service runs on python version 2.7.10. You can manage python versions using [pyenv](https://github.com/pyenv/pyenv)
 
 ```
-$ virtualenv venv
-$ source venv/bin/activate
-$ pip install -r requirements.txt
+$ pip install pipenv
+$ pipenv install
 ```
 
 Create a local.py file and insert correct configuration details:
@@ -495,7 +499,7 @@ $ nano cp oauth2server/proj/settings/local.py
 Sync the database:
 
 ```
-$ python oauth2server/manage.py syncdb
+$ pipenv run oauth2server/manage.py syncdb
 ```
 
 Configuration
@@ -521,5 +525,5 @@ Running Tests
 -------------
 
 ```
-$ python oauth2server/manage.py test
+$ pipenv run oauth2server/manage.py test
 ```

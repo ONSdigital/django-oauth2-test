@@ -1,8 +1,8 @@
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 from json import loads
-from sh import git
 import logging
+from sh import git
+
 
 stdlogger = logging.getLogger(__name__)
 
@@ -54,19 +54,19 @@ MICRO_SERVICE_INFO = {
 
 # if we can detect the git_info file then pull values from the file. Otherwise load values from the system we are
 # currently running on.
-if os.path.isfile('git_info'):
-    with open('git_info') as micro_service_info_file:
-        stdlogger.info("Found git_info. Configuring information endpoint for the OAuth2 server")
-        micro_service_info_dictionary = loads(micro_service_info_file.read())
-        MICRO_SERVICE_INFO['branch'] = micro_service_info_dictionary['branch']
-        MICRO_SERVICE_INFO['built'] = micro_service_info_dictionary['built']
-        MICRO_SERVICE_INFO['commit'] = micro_service_info_dictionary['commit']
-        MICRO_SERVICE_INFO['origin'] = micro_service_info_dictionary['origin']
-else:
-    stdlogger.info("No git_info found. Detecting git local settings for the OAuth2 server")
-    MICRO_SERVICE_INFO['branch'] = str(git('rev-parse', '--abbrev-ref', 'HEAD')).strip('\n')
-    MICRO_SERVICE_INFO['commit'] = str(git('rev-parse', 'HEAD')).strip('\n')
-    MICRO_SERVICE_INFO['origin'] = str(git('config', '--get', 'remote.origin.url')).strip('\n')
+# if os.path.isfile('git_info'):
+#     with open('git_info') as micro_service_info_file:
+#         stdlogger.info("Found git_info. Configuring information endpoint for the OAuth2 server")
+#         micro_service_info_dictionary = loads(micro_service_info_file.read())
+#         MICRO_SERVICE_INFO['branch'] = micro_service_info_dictionary['branch']
+#         MICRO_SERVICE_INFO['built'] = micro_service_info_dictionary['built']
+#         MICRO_SERVICE_INFO['commit'] = micro_service_info_dictionary['commit']
+#         MICRO_SERVICE_INFO['origin'] = micro_service_info_dictionary['origin']
+# else:
+#     stdlogger.info("No git_info found. Detecting git local settings for the OAuth2 server")
+#     MICRO_SERVICE_INFO['branch'] = str(git('rev-parse', '--abbrev-ref', 'HEAD')).strip('\n')
+#     MICRO_SERVICE_INFO['commit'] = str(git('rev-parse', 'HEAD')).strip('\n')
+#     MICRO_SERVICE_INFO['origin'] = str(git('config', '--get', 'remote.origin.url')).strip('\n')
 
 
 TIME_ZONE = 'UTC'

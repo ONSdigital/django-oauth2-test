@@ -6,3 +6,4 @@ staticfiles/
 *.logs
 *.log
 *.DS_Store
+.python-version
