@@ -1,8 +1,8 @@
 version: '2'
 
 services:
-  ras-postgres:
-    container_name: ras-postgres
+  postgres:
+    container_name: postgres
     image: sdcplatform/postgres
     environment:
       POSTGRES_PASSWORD: postgres
@@ -14,6 +14,6 @@ services:
     build: ./
     restart: always
     depends_on:
-      - ras-postgres
+      - postgres
     ports:
       - "8040:8040"
