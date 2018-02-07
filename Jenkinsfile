@@ -73,7 +73,7 @@ pipeline {
             steps {
                 sh "cf login -a https://${env.CLOUDFOUNDRY_API} --skip-ssl-validation -u ${CF_USER_USR} -p ${CF_USER_PSW} -o rmras -s ci"
                 sh 'cf push --no-start ras-django-ci'
-                sh 'cf set-env ras-django-dev SECRET_KEY {env.OAUTH_SECRET_KEY}'
+                sh 'cf set-env ras-django-ci SECRET_KEY {env.OAUTH_SECRET_KEY}'
                 sh 'cf start ras-django-ci'
             }
         }
@@ -143,7 +143,7 @@ pipeline {
             steps {
                 sh "cf login -a https://${env.CLOUDFOUNDRY_API} --skip-ssl-validation -u ${CF_USER_USR} -p ${CF_USER_PSW} -o rmras -s test"
                 sh 'cf push --no-start ras-django-test'
-                sh 'cf set-env ras-django-dev SECRET_KEY {env.OAUTH_SECRET_KEY}'
+                sh 'cf set-env ras-django-test SECRET_KEY {env.OAUTH_SECRET_KEY}'
                 sh 'cf start ras-django-test'
             }
         }
