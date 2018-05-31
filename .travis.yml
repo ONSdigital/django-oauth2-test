@@ -4,7 +4,7 @@ python:
     - "2.7"
 
 env:
-    - DJANGO=1.9 DB=postgres
+    - DJANGO=1.9 DB=postgres OAUTH2_SUPER_USER=ons@ons.gov OAUTH2_SUPER_USER_PASSWORD=password OAUTH2_SUPER_USER_EMAIL=ons@ons.gov
 
 cache:
     - pip

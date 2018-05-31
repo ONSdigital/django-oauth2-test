@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 # This shell script is run once when pushing an application to cloud foundry. It's needed to create a super user on the
 # OAuth2 (django) server - which happens only once.
 # You can find out more about creating super users on django here: https://docs.djangoproject.com/en/1.11/intro/tutorial02/
@@ -9,11 +11,6 @@
 # To set the start command to 'null' again you can do:
 #   /> cf push my_app_name -c "null"
 # To find out more go here: https://docs.cloudfoundry.org/devguide/deploy-apps/start-restart-restage.html
-
-echo "------ Checking Super User Environment Variables are Set ------"
-"${OAUTH2_SUPER_USER:?You need to set the OAUTH2_SUPER_USER environment variable to something.}"
-"${OAUTH2_SUPER_USER_PASSWORD:?You need to set the OAUTH2_SUPER_USER_PASSWORD environment variable to something.}"
-"${OAUTH2_SUPER_USER_EMAIL:?You need to set the OAUTH2_SUPER_USER_EMAIL environment variable to something.}"
 
 echo "------ Create database tables ------"
 python oauth2server/manage.py migrate --noinput
