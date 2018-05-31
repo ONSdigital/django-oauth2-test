@@ -91,7 +91,7 @@ DATABASES = {
     }
 }
 
-DEBUG = True                                                # Set to false on Production
+DEBUG = False                                                # Set to false on Production
 
 OAUTH2_SERVER = {
    'ACCESS_TOKEN_LIFETIME': 3600,
