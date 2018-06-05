@@ -272,8 +272,6 @@ def validate_request(func):
                 if account_verified == u'false':
                     request.user.account_is_verified = False
             except KeyError:
-                # This is an optional parameter so set it as false if it is not present
-                request.user.account_is_verified = False
                 pass
 
 
