@@ -1,4 +1,5 @@
 from proj.settings.default import *
+from distutils.util import strtobool
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -16,7 +17,7 @@ DATABASES = {
     },
 }
 
-DEBUG = True
+DEBUG = strtobool(os.environ.get('DEBUG','True'))
 
 OAUTH2_SERVER = {
     'ACCESS_TOKEN_LIFETIME': 3600,

@@ -1,5 +1,5 @@
 from proj.settings.default import *
-
+from distutils.util import strtobool
 
 # Standard instance of a logger with __name__. We are using this so that our root folder has our logger defined.
 stdlogger = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ DATABASES = {
     }
 }
 
-DEBUG = True                                                # Set to false on Production
+DEBUG = strtobool(os.environ.get('DEBUG','False'))
 
 OAUTH2_SERVER = {
     'ACCESS_TOKEN_LIFETIME': 3600,

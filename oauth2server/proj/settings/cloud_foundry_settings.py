@@ -1,3 +1,5 @@
+from distutils.util import strtobool
+
 __author__ = 'nherriot'
 
 # This settings file is loaded when the system is run via cloud foundry.
@@ -91,7 +93,7 @@ DATABASES = {
     }
 }
 
-DEBUG = True                                                # Set to false on Production
+DEBUG = strtobool(os.environ.get('DEBUG','False'))
 
 OAUTH2_SERVER = {
    'ACCESS_TOKEN_LIFETIME': 3600,
