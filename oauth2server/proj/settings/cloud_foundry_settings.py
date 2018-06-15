@@ -90,10 +90,13 @@ DATABASES = {
         'PASSWORD':DB_PASSWORD,
         'HOST':DB_HOST,
         'PORT': '5432',
+        'CONN_MAX_AGE': 30,  # seconds for persistent connection, since Django 1.6
     }
 }
 
+
 DEBUG = strtobool(os.environ.get('DEBUG','False'))
+
 
 OAUTH2_SERVER = {
    'ACCESS_TOKEN_LIFETIME': 3600,
