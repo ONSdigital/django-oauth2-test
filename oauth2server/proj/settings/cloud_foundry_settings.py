@@ -90,7 +90,7 @@ DATABASES = {
         'PASSWORD':DB_PASSWORD,
         'HOST':DB_HOST,
         'PORT': '5432',
-        'CONN_MAX_AGE': 30,  # seconds for persistent connection, since Django 1.6
+        'CONN_MAX_AGE': 0,  # seconds for persistent connection, since Django 1.6
     }
 }
 
