@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework.views import exception_handler
 from rest_framework.exceptions import APIException
 from rest_framework import status
@@ -144,6 +146,7 @@ class DatabaseFailureException(APIException):
     default_detail = _(u'There was a system failure creating this resource on the server')
 
 
+stdlogger = logging.getLogger(__name__)
 
 def custom_exception_handler(exc, context):
     """
@@ -157,6 +160,7 @@ def custom_exception_handler(exc, context):
     """
     # Call REST framework's default exception handler first,
     # to get the standard error response.
+    stdlogger.exception('Unhandled exception')
     response = exception_handler(exc, context)
 
     if not response:
@@ -176,8 +180,5 @@ def custom_exception_handler(exc, context):
         response.data['error_description'] = exc.default_detail
     elif 'detail' in response.data:
         response.data['error_description'] = response.data['details']
-
-    if 'detail' in response.data:
-        del response.data['detail']
 
     return response

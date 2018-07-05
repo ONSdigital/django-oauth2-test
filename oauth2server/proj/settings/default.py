@@ -1,4 +1,5 @@
 import os
+import sys
 from json import loads
 import logging
 from sh import git
@@ -108,17 +109,14 @@ TEMPLATES = [
 ]
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
     ),
     'EXCEPTION_HANDLER': 'proj.exceptions.custom_exception_handler',
-}
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    )
 }
 
 
@@ -160,18 +158,10 @@ LOGGING = {
     'handlers': {
         'console': {
             'level': 'DEBUG',
-            'filters': ['require_debug_true'],
-            #'filters': [],                      # Allow all logs to pass to console
             'class': 'logging.StreamHandler',
-            'formatter': 'ons'
+            'formatter': 'ons',
+            'stream': sys.stdout,
         },
-        'console_cloud_foundry': {
-            'level': 'WARNING',
-            'filters': ['require_debug_false'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'ons'
-        },
-
         'development_logfile': {
             'level': 'DEBUG',
             'filters': ['require_debug_true'],
@@ -205,12 +195,12 @@ LOGGING = {
     'loggers': {
         # This is our main log handler. It catches all logs within apps.*.*
         'apps': {
-            'handlers': ['console', 'console_cloud_foundry', 'production_logfile', 'development_logfile'],
+            'handlers': ['console', 'production_logfile', 'development_logfile'],
             'level': 'DEBUG',
         },
         # This defines a handler for the namespace proj.*.*
         'proj': {
-            'handlers': ['console', 'console_cloud_foundry', 'development_logfile', 'proj_logfile'],
+            'handlers': ['console', 'development_logfile', 'proj_logfile'],
         },
         # Our remote handler is used for logging anything we want to be logged while the app is running remotely
         'remote': {
