@@ -1,1 +1,1 @@
-web: pipenv run oauth2server/manage.py collectstatic --noinput ; pipenv run oauth2server/manage.py migrate; bash ./init_db.sh; gunicorn --bind 0.0.0.0:$PORT --workers 8 --worker-class gevent --worker-connections 1000 --timeout 30 --keep-alive 2 proj.wsgi --pythonpath 'oauth2server'
+web: pipenv run oauth2server/manage.py collectstatic --noinput ; pipenv run oauth2server/manage.py migrate; bash ./init_db.sh; gunicorn --bind 0.0.0.0:$PORT --workers 4 proj.wsgi --pythonpath 'oauth2server'
