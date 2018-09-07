@@ -94,6 +94,9 @@ class OAuthUser(OAuthCredentials):
     def unlock_account(self):
         self.account_is_locked = False
 
+    def verify_account(self):
+        self.account_is_verified = True
+
     class Meta:
         #db_table = 'product_item'
         ordering = ['-email']
