@@ -10,7 +10,6 @@ from django.db import IntegrityError, InternalError, DataError, DatabaseError
 from apps.accounts.decorators import validate_request
 from proj.exceptions import DatabaseFailureException
 
-
 stdlogger = logging.getLogger(__name__)
 
 
@@ -42,14 +41,14 @@ class AccountView(APIView):
         context = {'account': request.user.email, 'created': 'success'}
         json_context = JSONRenderer().render(context)
 
-        return Response(data=json_context, status=status.HTTP_201_CREATED,)
+        return Response(data=json_context, status=status.HTTP_201_CREATED, )
 
     @method_decorator(validate_request)
     def get(self, request):
         # TODO The get should be supplied to provide introspection for admin functions
         stdlogger.debug("Hitting HTTP GET account view")
         # Leave this for future changes and possibly introspection for getting details of a user
-        return Response(data={"name": "none", "id": "none", "status": "none"}, status=status.HTTP_201_CREATED,)
+        return Response(data={"name": "none", "id": "none", "status": "none"}, status=status.HTTP_201_CREATED, )
 
     @method_decorator(validate_request)
     def put(self, request):
@@ -65,15 +64,22 @@ class AccountView(APIView):
         """
 
         stdlogger.debug("Hitting HTTP PUT account view")
-
         # Try and persist the user to the DB. Remember this could fail a data integrity check if some other system has
         # saved this user before we run this line of code!
+        # if account_locked attribute set to False, we want to unlock the account
         try:
-            # Check to see if this PUT is changing the user ID. If it is, then keep the same user object with Primary
-            # Key and change the email to the new one.
+            # Check to see if the PUT is changing the user ID or the POST contains the account_locked flag.
+            # If so we Key and change the email to the new one or unlock account and reset failed log-ins.
             if request.new_username:
                 stdlogger.info("Admin is updating a user ID to a new value")
                 request.user.email = request.new_username
+            if request.POST.get('account_locked') == 'False':
+                stdlogger.debug('Admin is unlocking account')
+                request.user.unlock_account()
+                request.user.reset_failed_logins()
+                # Verify user if not verified
+                if not request.user.account_is_verified:
+                    request.user.verify_account()
             request.user.save()
 
         except (IntegrityError, InternalError, DataError, DatabaseError):
@@ -84,7 +90,7 @@ class AccountView(APIView):
         context = {'account': request.user.email, 'updated': 'success'}
         json_context = JSONRenderer().render(context)
 
-        return Response(data=json_context, status=status.HTTP_201_CREATED,)
+        return Response(data=json_context, status=status.HTTP_201_CREATED, )
 
     @method_decorator(validate_request)
     def delete(self, request):
@@ -111,4 +117,4 @@ class AccountView(APIView):
         context = {'account': user_email, 'deleted': 'success'}
         json_context = JSONRenderer().render(context)
 
-        return Response(data=json_context, status=status.HTTP_201_CREATED,)
+        return Response(data=json_context, status=status.HTTP_201_CREATED, )

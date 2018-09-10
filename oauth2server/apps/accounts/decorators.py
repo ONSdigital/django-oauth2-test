@@ -53,7 +53,6 @@ def validate_request(func):
 
         client_id, client_secret = None, None
 
-
         # First, let's check Authorization header if present
         # TODO - Look at removing this and encrypting password. It's an OAuth2 server, so it should be over SSL anyway
         # but revisit this if time permits.
@@ -61,7 +60,6 @@ def validate_request(func):
             stdlogger.debug("We have a HTTP_AUTHORIZATION request ***")
             auth_header = request.META['HTTP_AUTHORIZATION']
             auth_method, auth = re.split(':|;|,| ', auth_header)
-            #auth_method, auth = request.META['HTTP_AUTHORIZATION'].split(':')
             if auth_method.lower() == 'basic':
                 client_id, client_secret = base64.b64decode(auth).split(':')
 
@@ -148,7 +146,8 @@ def validate_request(func):
                 user = OAuthUser(email=username, password=password, account_is_verified=False)
                 user.validate_unique()
             except ValidationError:
-                stdlogger.warning("We failed username check for creating a user in the HTTP POST. This user already exists")
+                stdlogger.warning(
+                    "We failed username check for creating a user in the HTTP POST. This user already exists")
                 raise DuplicateUserException
 
         if request.method == 'PUT':
@@ -156,9 +155,6 @@ def validate_request(func):
                 username = request.POST['username']
                 validate_email(username)
                 user = OAuthUser.objects.get(email=username)
-                if user.account_is_locked:
-                    stdlogger.warning("A user trying to update their account has it in a locked state")
-                    raise UserAccountLockedException
             except KeyError:
                 stdlogger.warning("Username is missing from the PUT method")
                 raise UsernameRequiredException()
@@ -166,7 +162,8 @@ def validate_request(func):
                 stdlogger.warning("Email failed validation check for validating a user")
                 raise InvalidUserCredentialsException
             except OAuthUser.DoesNotExist:
-                stdlogger.error("Error while updating the User ID. The email: {} does not exist on the OAuth2 server".format(username))
+                stdlogger.error(
+                    "Error while updating the User ID. The email does not exist on the OAuth2 server")
                 raise UnknownUserException
 
             try:
@@ -175,7 +172,8 @@ def validate_request(func):
                 validate_email(new_username)
                 check_user = OAuthUser.objects.get(email=new_username)
                 if check_user:
-                    stdlogger.warning("The user: {} tried to change their email to the already active user: {}".format(username, new_username))
+                    stdlogger.warning(
+                        "The respondent has tried to change their email to an already active email address")
                     raise DuplicateUserException
 
             except KeyError:
@@ -212,7 +210,7 @@ def validate_request(func):
                 raise InvalidUserCredentialsException
             except OAuthUser.DoesNotExist:
                 stdlogger.error(
-                    "Error while getting the User ID. The email: {} does not exist on the OAuth2 server".format(username))
+                    "Error while getting the User ID. The email does not exist on the OAuth2 server")
                 raise UnknownUserException
 
         # We can ignore even detecting the 'password' in the DELETE as it's not used.
@@ -229,13 +227,11 @@ def validate_request(func):
                 raise InvalidUserCredentialsException
             except OAuthUser.DoesNotExist:
                 stdlogger.error(
-                    "Error while trying to DELETE the User. The email: {} does not exist on the OAuth2 server".format(username))
+                    "Error while trying to DELETE the User. The email does not exist on the OAuth2 server")
                 raise UnknownUserException
 
         # OK we pass all validation checks pass the user object back in the request
         request.user = user
-
-
 
     def _extract_active(request):
         stdlogger.info("Extracting account verified flag")
@@ -263,7 +259,6 @@ def validate_request(func):
                 request.user.account_is_verified = False
                 pass
 
-
         if request.method == 'PUT':
             try:
                 account_verified = request.POST['account_verified']
@@ -273,9 +268,6 @@ def validate_request(func):
                     request.user.account_is_verified = False
             except KeyError:
                 pass
-
-
-
 
     def _extract_scope(request):
         """
@@ -310,11 +302,11 @@ def validate_request(func):
             request.scopes = OAuthScope.objects.filter(is_default=True)
 
     def _extract_account_locked(request):
-        #TODO add in the detecting of this attribute
+        # TODO add in the detecting of this attribute
         pass
 
     def _extract_failed_logins(request):
-        #TODO add in the detecting of this attribute
+        # TODO add in the detecting of this attribute
         pass
 
     def decorator(request, *args, **kwargs):
@@ -323,13 +315,7 @@ def validate_request(func):
         _extract_client(request=request)
         _extract_username(request=request, *args, **kwargs)
         _extract_active(request=request)
-        #_extract_scope(request=request)
-        #_extract_account_locked(request=request)
-        #_extract_failed_login(request=request)
 
         return func(request, *args, **kwargs)
 
     return decorator
-
-
-

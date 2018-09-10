@@ -31,8 +31,6 @@ class UserAccountNotVerified(APIException):
     default_detail = _(u'User account not verified')
 
 
-
-
 class InvalidUserCredentialsException(APIException):
     status_code = status.HTTP_401_UNAUTHORIZED
     default_error = u'unauthorized_user'
@@ -131,12 +129,12 @@ class DuplicateUserException(APIException):
     default_code = u'duplicate_user'
     default_detail = _(u'Duplicate user credentials')
 
+
 class UnknownUserException(APIException):
     status_code = status.HTTP_401_UNAUTHORIZED
     default_error = u'unknown_user'
     default_code = u'unknown_user'
     default_detail = _(u'Unknown user credentials. This user does not exist on the OAuth2 server')
-
 
 
 class DatabaseFailureException(APIException):
@@ -147,6 +145,7 @@ class DatabaseFailureException(APIException):
 
 
 stdlogger = logging.getLogger(__name__)
+
 
 def custom_exception_handler(exc, context):
     """

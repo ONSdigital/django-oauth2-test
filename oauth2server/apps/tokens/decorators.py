@@ -229,13 +229,13 @@ def validate_request(func):
                     raise UserAccountLockedException()
                 raise InvalidUserCredentialsException()
 
-            if not user.account_is_verified:
-                stdlogger.warning("Raised UserAccountNotVerified")
-                raise UserAccountNotVerified()
-
             if user.account_locked():
                 stdlogger.warning("Raised UserAccountLockedException")
                 raise UserAccountLockedException()
+
+            if not user.account_is_verified:
+                stdlogger.warning("Raised UserAccountNotVerified")
+                raise UserAccountNotVerified()
 
             user.reset_failed_logins()
             user.unlock_account()
