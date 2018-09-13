@@ -137,7 +137,7 @@ def validate_request(func):
             'reset_password',
         )
         if grant_type not in valid_grant_types:
-            stdlogger.warning( "Invalid grant type exception" )
+            stdlogger.warning("Invalid grant type exception")
             raise InvalidGrantTypeException()
 
         # authorization_code grant requires code parameter
@@ -185,10 +185,6 @@ def validate_request(func):
                 raise InvalidUserCredentialsException()
             user = users[0]
 
-            if user.account_locked():
-                stdlogger.warning("Raised UserAccountLockedException")
-                raise UserAccountLockedException()
-
             request.user = user
 
         # refresh_token grant requires refresh_token parameter
@@ -216,11 +212,10 @@ def validate_request(func):
 
             users = OAuthUser.objects.filter(email__iexact=username)
             if not users.exists():
-                stdlogger.warning( "Raised InvalidUserCredentialsException")
+                stdlogger.warning("Raised InvalidUserCredentialsException")
                 raise InvalidUserCredentialsException()
             user = users[0]
             if not user.verify_password(password):
-                stdlogger.debug("I've raised InvalidUserCredentialsException - password failed the check!")
                 user.increment_failed_logins()
                 user.save()
                 if user.get_failed_logins() >= settings.MAX_FAILED_LOGINS:
@@ -243,7 +238,7 @@ def validate_request(func):
             request.user = user
 
         if grant_type == 'refresh_token':
-            stdlogger.debug( "This is grant_type refresh_code. Second function")
+            stdlogger.debug("This is grant_type refresh_code. Second function")
             try:
                 request.refresh_token = OAuthRefreshToken.objects.get(
                     refresh_token=refresh_token)
